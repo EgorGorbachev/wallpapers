@@ -1,0 +1,2 @@
+rootProject.name = "Gorbachev_wallpapers"
+include ':app'
