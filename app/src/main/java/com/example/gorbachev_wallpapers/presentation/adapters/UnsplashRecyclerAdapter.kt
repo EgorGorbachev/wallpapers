@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -18,9 +19,12 @@ import com.example.gorbachev_wallpapers.models.UnsplashPhoto
 
 
 class UnsplashRecyclerAdapter :
-	PagingDataAdapter<UnsplashPhoto, UnsplashRecyclerAdapter.PhotoViewHolder>(PHOTO_COMPARATOR){
+	PagingDataAdapter<UnsplashPhoto, UnsplashRecyclerAdapter.PhotoViewHolder>(PHOTO_COMPARATOR) {
 	
-	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
+	override fun onCreateViewHolder(
+		parent: ViewGroup,
+		viewType: Int)
+	: PhotoViewHolder {
 		val binding =
 			RecyclerItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 		Log.d("lol", "lol")
@@ -44,7 +48,6 @@ class UnsplashRecyclerAdapter :
 				Glide.with(itemView).load(photo.urls.regular).centerCrop()
 					.transition(DrawableTransitionOptions.withCrossFade())
 					.error(R.drawable.ic_baseline_error_24).into(imageViewInCard)
-				
 			}
 			
 		}
@@ -61,6 +64,7 @@ class UnsplashRecyclerAdapter :
 				newItem: UnsplashPhoto
 			) = oldItem == newItem
 		}
+		
 	}
 	
 	

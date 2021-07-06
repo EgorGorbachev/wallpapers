@@ -5,18 +5,21 @@
         android:enabled="true"
         android:icon="@drawable/ic_baseline_search_24"
         android:title="@string/bot_nav_search"
-        android:background="@drawable/list_selector_background"/>
+        android:background="@drawable/list_selector_background"
+        android:padding="10dp"/>
 
     <item
         android:id="@+id/favourites_fr"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_favorite_24"
         android:title="@string/bot_nav_fav"
-        android:background="@drawable/list_selector_background"/>
+        android:background="@drawable/list_selector_background"
+        android:padding="10dp"/>
     <item
         android:id="@+id/history_fr"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_history_24"
         android:title="@string/bot_nav_history"
-        android:background="@drawable/list_selector_background"/>
+        android:background="@drawable/list_selector_background"
+        android:padding="10dp"/>
 </menu>
