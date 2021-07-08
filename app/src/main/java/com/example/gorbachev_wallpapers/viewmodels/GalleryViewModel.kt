@@ -24,8 +24,12 @@ class GalleryViewModel @ViewModelInject constructor(
 		currentQuery.value = query
 	}
 	
+	fun getCurrentQuery():String{
+		return currentQuery.value!!
+	}
+	
 	companion object {
-		private const val DEFAULT_QUERY = "City"
+		private const val DEFAULT_QUERY = "Forest"
 	}
 
 }

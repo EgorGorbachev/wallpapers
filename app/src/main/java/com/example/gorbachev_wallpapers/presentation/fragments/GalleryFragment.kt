@@ -3,15 +3,14 @@ package com.example.gorbachev_wallpapers.presentation.fragments
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.LinearLayout
 import android.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.gorbachev_wallpapers.R
 import com.example.gorbachev_wallpapers.databinding.FragmentGalleryBinding
+import com.example.gorbachev_wallpapers.models.UnsplashPhoto
 import com.example.gorbachev_wallpapers.presentation.adapters.UnsplashLoadStateAdapter
 import com.example.gorbachev_wallpapers.presentation.adapters.UnsplashRecyclerAdapter
 import com.example.gorbachev_wallpapers.presentation.base.BaseFragment
@@ -23,7 +22,7 @@ import java.io.IOException
 
 
 @AndroidEntryPoint
-class GalleryFragment : BaseFragment(R.layout.fragment_gallery) {
+class GalleryFragment : BaseFragment(R.layout.fragment_gallery), UnsplashRecyclerAdapter.OnItemClickListener {
 	
 	private val viewModel by viewModels<GalleryViewModel>()
 	
@@ -40,10 +39,11 @@ class GalleryFragment : BaseFragment(R.layout.fragment_gallery) {
 		super.onViewCreated(view, savedInstanceState)
 		
 		_binding = FragmentGalleryBinding.bind(view)
-		val adapter = UnsplashRecyclerAdapter()
+		val adapter = UnsplashRecyclerAdapter(this)
 		
 		appbar = binding.imageAppBar
 		appbar.setBackgroundColor(Color.TRANSPARENT)
+		
 		
 		val footerAdapter = UnsplashLoadStateAdapter { adapter.retry() }
 		val recyclerView = binding.imageRecyclerView
@@ -69,12 +69,9 @@ class GalleryFragment : BaseFragment(R.layout.fragment_gallery) {
 		}
 		
 		searchView = binding.imageSearchView
-		searchView.isIconifiedByDefault = true;
-		searchView.isFocusable = true;
-		searchView.isIconified = false;
-		searchView.requestFocus()
+		searchView.isIconifiedByDefault = false;
 		searchView.clearFocus()
-		searchView.queryHint = "city"
+		searchView.queryHint = "forest"
 		
 		searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 			override fun onQueryTextSubmit(query: String?): Boolean {
@@ -115,6 +112,11 @@ class GalleryFragment : BaseFragment(R.layout.fragment_gallery) {
 			
 		}
 		
+	}
+	
+	override fun onItemClick(photo: UnsplashPhoto) {
+		val action = GalleryFragmentDirections.actionSearchFrToDetailsImageFragment(photo, viewModel.getCurrentQuery())
+		findNavController().navigate(action)
 	}
 	
 	

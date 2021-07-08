@@ -2,7 +2,11 @@ package com.example.gorbachev_wallpapers
 
 import android.os.Bundle
 import android.util.Log
+import android.view.Window
+import android.view.WindowManager
+import android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
@@ -29,7 +33,5 @@ class MainActivity : AppCompatActivity() {
 		val navController = navHostFragment.findNavController()
 		botNav.setupWithNavController(navController)
 		
-		
-		val list:List<UnsplashPhoto.UnsplashUser>
 	}
 }

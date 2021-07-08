@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ImageDetailsMenuStyle">
+        <item name="android:textSize">1sp</item>
+    </style>
+    <style name="ProgressBarStyle">
+        <item name="colorAccent">@color/secondary</item>
+    </style>
+</resources>

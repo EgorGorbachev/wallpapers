@@ -1,10 +1,13 @@
 package com.example.gorbachev_wallpapers.presentation.fragments
 
+import android.animation.ObjectAnimator
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.view.Window
+import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
 import com.example.gorbachev_wallpapers.R
 import com.example.gorbachev_wallpapers.presentation.base.BaseFragment
@@ -13,6 +16,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
+
 
 class LoadingFragment : BaseFragment(R.layout.fragment_loading) {
 	
@@ -32,6 +37,17 @@ class LoadingFragment : BaseFragment(R.layout.fragment_loading) {
 			Navigation.findNavController(requireView())
 				.navigate(R.id.action_loadingFragment_to_search_fr)
 			botNav.visibility = View.VISIBLE
+		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			val window:Window = requireActivity().window
+			val startColor: Int = window.statusBarColor
+			val endColor = ContextCompat.getColor(requireContext(), R.color.white)
+			ObjectAnimator.ofArgb(
+				window,
+				"statusBarColor",
+				startColor,
+				endColor
+			).start()
 		}
 		
 		return view

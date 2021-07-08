@@ -1,5 +1,6 @@
 package com.example.gorbachev_wallpapers.presentation.adapters
 
+import android.content.DialogInterface
 import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,7 +19,7 @@ import com.example.gorbachev_wallpapers.databinding.RecyclerItemBinding
 import com.example.gorbachev_wallpapers.models.UnsplashPhoto
 
 
-class UnsplashRecyclerAdapter :
+class UnsplashRecyclerAdapter(private val listener: OnItemClickListener) :
 	PagingDataAdapter<UnsplashPhoto, UnsplashRecyclerAdapter.PhotoViewHolder>(PHOTO_COMPARATOR) {
 	
 	override fun onCreateViewHolder(
@@ -40,8 +41,21 @@ class UnsplashRecyclerAdapter :
 		}
 	}
 	
-	class PhotoViewHolder(private val binding: RecyclerItemBinding) :
+	inner class PhotoViewHolder(private val binding: RecyclerItemBinding) :
 		RecyclerView.ViewHolder(binding.root) {
+		
+		init {
+			binding.root.setOnClickListener {
+				val position = bindingAdapterPosition
+				if(position != RecyclerView.NO_POSITION) {
+					val item = getItem(position)
+					if (item !=null){
+						listener.onItemClick(item)
+					}
+				}
+				
+			}
+		}
 		
 		fun bind(photo: UnsplashPhoto) {
 			binding.apply {
@@ -52,6 +66,10 @@ class UnsplashRecyclerAdapter :
 			
 		}
 		
+	}
+	
+	interface OnItemClickListener{
+		fun onItemClick(photo: UnsplashPhoto)
 	}
 	
 	companion object {

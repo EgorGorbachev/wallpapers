@@ -20,7 +20,12 @@
         android:id="@+id/search_fr"
         android:name="com.example.gorbachev_wallpapers.presentation.fragments.GalleryFragment"
         android:label="fragment_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        tools:layout="@layout/fragment_gallery" >
+        <action
+            android:id="@+id/action_search_fr_to_detailsImageFragment"
+            app:destination="@id/detailsImageFragment"
+            app:popExitAnim="@anim/to_right" />
+    </fragment>
     <fragment
         android:id="@+id/favourites_fr"
         android:name="com.example.gorbachev_wallpapers.presentation.fragments.FavouritesFragment"
@@ -31,4 +36,19 @@
         android:name="com.example.gorbachev_wallpapers.presentation.fragments.HistoryFragment"
         android:label="fragment_history"
         tools:layout="@layout/fragment_history" />
+    <fragment
+        android:id="@+id/detailsImageFragment"
+        android:name="com.example.gorbachev_wallpapers.presentation.fragments.DetailsImageFragment"
+        android:label="DetailsImageFragment"
+        tools:layout="@layout/fragment_details_image">
+        <argument
+            android:name="photo"
+            app:argType="com.example.gorbachev_wallpapers.models.UnsplashPhoto" />
+        <action
+            android:id="@+id/action_detailsImageFragment_to_search_fr"
+            app:destination="@id/search_fr" />
+        <argument
+            android:name="query"
+            app:argType="string" />
+    </fragment>
 </navigation>
