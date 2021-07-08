@@ -10,4 +10,5 @@
 
     <color name="main">#221DC6</color>
     <color name="secondary">#4a5c34</color>
+    <color name="text">#1E1E1E</color>
 </resources>

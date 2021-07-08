@@ -6,4 +6,14 @@
     <style name="ProgressBarStyle">
         <item name="colorAccent">@color/secondary</item>
     </style>
+    <style name="TuneMenuStyle" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
+    </style>
+    <style name="BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+    <style name="popup_anim">
+        <item name="android:windowEnterAnimation">@anim/from_bottom</item>
+        <item name="android:windowExitAnimation">@anim/to_bottom</item>
+    </style>
 </resources>
