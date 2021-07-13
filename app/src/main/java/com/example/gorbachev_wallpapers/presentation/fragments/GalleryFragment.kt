@@ -8,26 +8,32 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.gorbachev_gmail.sharedPref.SharedPreferences
 import com.example.gorbachev_wallpapers.R
 import com.example.gorbachev_wallpapers.databinding.FragmentGalleryBinding
 import com.example.gorbachev_wallpapers.models.UnsplashPhoto
 import com.example.gorbachev_wallpapers.presentation.adapters.UnsplashLoadStateAdapter
 import com.example.gorbachev_wallpapers.presentation.adapters.UnsplashRecyclerAdapter
 import com.example.gorbachev_wallpapers.presentation.base.BaseFragment
+import com.example.gorbachev_wallpapers.sharedPref.QUERY
 import com.example.gorbachev_wallpapers.viewmodels.GalleryViewModel
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.IOException
 
 
 @AndroidEntryPoint
-class GalleryFragment : BaseFragment(R.layout.fragment_gallery), UnsplashRecyclerAdapter.OnItemClickListener {
+class GalleryFragment : BaseFragment(R.layout.fragment_gallery),
+	UnsplashRecyclerAdapter.OnItemClickListener {
 	
 	private val viewModel by viewModels<GalleryViewModel>()
 	
 	private var _binding: FragmentGalleryBinding? = null
 	private val binding get() = _binding!!
+	
+	private lateinit var botNav: BottomNavigationView
 	
 	private lateinit var searchView: SearchView
 	
@@ -35,19 +41,34 @@ class GalleryFragment : BaseFragment(R.layout.fragment_gallery), UnsplashRecycle
 	
 	private lateinit var fabColumn: FloatingActionButton
 	
+	private lateinit var SP: SharedPreferences
+	
+	
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		
 		_binding = FragmentGalleryBinding.bind(view)
 		val adapter = UnsplashRecyclerAdapter(this)
 		
+		botNav = requireActivity().findViewById(R.id.bot_nav)
+		botNav.isVisible = true
+		
 		appbar = binding.imageAppBar
 		appbar.setBackgroundColor(Color.TRANSPARENT)
 		
+		SP = SharedPreferences(requireContext())
+		binding.imageRecyclerView.scrollToPosition(0)
+		viewModel.searchPhotos(SP.getPrefString(QUERY)!!)
+		
+		fabColumn = binding.fabColumn
 		
 		val footerAdapter = UnsplashLoadStateAdapter { adapter.retry() }
 		val recyclerView = binding.imageRecyclerView
-		val layoutManager = GridLayoutManager(requireContext(), 2)
+		val layoutManager = GridLayoutManager(requireContext(), SP.getPrefInt("COUNT_COLUMN")!!)
+		if (SP.getPrefInt("COUNT_COLUMN") == 2) {
+			fabColumn.setImageResource(R.drawable.ic_3_columns)
+		} else fabColumn.setImageResource(R.drawable.ic_2_columns)
+		
 		recyclerView.layoutManager = layoutManager
 		recyclerView.setHasFixedSize(true)
 		recyclerView.adapter = adapter.withLoadStateFooter(
@@ -71,7 +92,7 @@ class GalleryFragment : BaseFragment(R.layout.fragment_gallery), UnsplashRecycle
 		searchView = binding.imageSearchView
 		searchView.isIconifiedByDefault = false;
 		searchView.clearFocus()
-		searchView.queryHint = "forest"
+		searchView.queryHint = SP.getPrefString(QUERY)
 		
 		searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 			override fun onQueryTextSubmit(query: String?): Boolean {
@@ -79,6 +100,7 @@ class GalleryFragment : BaseFragment(R.layout.fragment_gallery), UnsplashRecycle
 					binding.imageRecyclerView.scrollToPosition(0)
 					viewModel.searchPhotos(query)
 					searchView.clearFocus()
+					SP.setPref(QUERY, query)
 				}
 				return true
 			}
@@ -88,25 +110,25 @@ class GalleryFragment : BaseFragment(R.layout.fragment_gallery), UnsplashRecycle
 			}
 		})
 		
-		if(!isOnline()){
+		if (!isOnline()) {
 			toast("You have no internet connection!")
 			binding.imageRecyclerView.isVisible = false
 			binding.isOnlineTV.isVisible = true
 			binding.imageAppBar.isVisible = false
 		}
-		var columnCount = 2
-		fabColumn = binding.fabColumn
+		
+		
 		fabColumn.setOnClickListener {
-			when(columnCount){
+			when (SP.getPrefInt("COUNT_COLUMN")) {
 				2 -> {
 					(binding.imageRecyclerView.layoutManager as GridLayoutManager).spanCount = 3
 					fabColumn.setImageResource(R.drawable.ic_2_columns)
-					columnCount = 3
+					SP.setPref("COUNT_COLUMN", 3)
 				}
 				3 -> {
 					(binding.imageRecyclerView.layoutManager as GridLayoutManager).spanCount = 2
 					fabColumn.setImageResource(R.drawable.ic_3_columns)
-					columnCount = 2
+					SP.setPref("COUNT_COLUMN", 2)
 				}
 			}
 			
@@ -114,8 +136,12 @@ class GalleryFragment : BaseFragment(R.layout.fragment_gallery), UnsplashRecycle
 		
 	}
 	
+	
 	override fun onItemClick(photo: UnsplashPhoto) {
-		val action = GalleryFragmentDirections.actionSearchFrToDetailsImageFragment(photo, viewModel.getCurrentQuery())
+		val action = GalleryFragmentDirections.actionSearchFrToDetailsImageFragment(
+			photo,
+			viewModel.getCurrentQuery()
+		)
 		findNavController().navigate(action)
 	}
 	

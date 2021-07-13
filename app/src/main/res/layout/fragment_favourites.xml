@@ -1,14 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".FavoritsFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        tools:context=".presentation.fragments.FavouritesFragment">
 
-</FrameLayout>
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayoutFavourites"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:tabGravity="fill"
+                app:tabIconTint="@color/main"
+                app:tabIndicatorColor="@color/main"
+                app:tabInlineLabel="true"
+                app:tabMode="fixed" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewPagerFavourites"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

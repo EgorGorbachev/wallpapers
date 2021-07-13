@@ -5,18 +5,18 @@
         android:enabled="true"
         android:icon="@drawable/ic_baseline_share_24"
         android:background="@drawable/list_selector_background"
-        android:title="dfsfdfd" />
+        android:title="Share" />
 
     <item
         android:id="@+id/details_menu_settings"
         android:enabled="true"
         android:icon="@drawable/ic_settings"
-        android:title="sdfdsf"
+        android:title="Options"
         android:background="@drawable/list_selector_background" />
     <item
         android:id="@+id/details_menu_info"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_info_24"
-        android:title="asdasd"
+        android:title="Info"
         android:background="@drawable/list_selector_background" />
 </menu>

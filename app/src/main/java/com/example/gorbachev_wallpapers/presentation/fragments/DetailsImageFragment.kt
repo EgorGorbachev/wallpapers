@@ -1,6 +1,7 @@
 package com.example.gorbachev_wallpapers.presentation.fragments
 
 import android.Manifest
+import android.app.WallpaperManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,6 +12,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -19,11 +21,16 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -31,23 +38,39 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.example.gorbachev_wallpapers.R
 import com.example.gorbachev_wallpapers.databinding.FragmentDetailsImageBinding
+import com.example.gorbachev_wallpapers.databinding.InfoMenuBinding
+import com.example.gorbachev_wallpapers.databinding.TuneMenuBinding
+import com.example.gorbachev_wallpapers.models.Images
+import com.example.gorbachev_wallpapers.presentation.adapters.FavouritesImagesRecyclerAdapter
 import com.example.gorbachev_wallpapers.presentation.base.BaseFragment
-import com.example.gorbachev_wallpapers.presentation.util.TuneSheetDialog
+import com.example.gorbachev_wallpapers.viewmodels.ImagesViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_details_image.*
+import kotlinx.android.synthetic.main.info_menu.*
 import java.io.ByteArrayOutputStream
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
-
+@AndroidEntryPoint
 class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
+	
+	private val imagesViewModel by viewModels<ImagesViewModel>()
 	
 	private var _binding: FragmentDetailsImageBinding? = null
 	private val binding get() = _binding!!
 	
-	private lateinit var botNav: BottomNavigationView
+	private lateinit var adapter: FavouritesImagesRecyclerAdapter
+	
+	private lateinit var botNav: BottomNavigationViewEx
 	
 	private val args by navArgs<DetailsImageFragmentArgs>()
 	
 	var WRITE_EXTERNAL_STORAGE_PERMISSION_CODE = 101
+	
+	private var popupWindow: PopupWindow? = null
 	
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
@@ -57,14 +80,21 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 		
 		botNav = requireActivity().findViewById(R.id.bot_nav)
 		botNav.visibility = View.GONE
+		botNav.enableAnimation(false)
 		
-		binding.imageDetailsMenu.clearFocus()
+		val imageDetailsMenu = view.findViewById(R.id.imageDetailsMenu) as BottomNavigationViewEx
+		imageDetailsMenu.enableAnimation(false);
+		imageDetailsMenu.enableShiftingMode(false);
+		imageDetailsMenu.enableItemShiftingMode(false);
+		
+		val photo = args.photo
 		
 		(activity as AppCompatActivity).supportActionBar
 		(activity as AppCompatActivity).setSupportActionBar(binding.toolbar)
 		(activity as AppCompatActivity).supportActionBar?.apply {
 			setDisplayShowHomeEnabled(true)
 			setDisplayHomeAsUpEnabled(true)
+			
 			title = null
 		}
 		binding.toolbar.setNavigationOnClickListener {
@@ -74,9 +104,9 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 		}
 		
 		binding.apply {
-			val photo = args.photo
+			
 			Glide.with(this@DetailsImageFragment)
-				.load(photo.urls.full)
+				.load(photo.urls.regular)
 				.error(R.drawable.ic_baseline_error_24)
 				.listener(object : RequestListener<Drawable> {
 					override fun onLoadFailed(
@@ -110,17 +140,8 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 		binding.apply {
 			var checkFullscreen = false
 			imageFullscreenBtn.setOnClickListener {
-				if (!checkFullscreen) {
-					toolbar.isVisible = false
-					imageDetailsMenu.isVisible = false
-					imageFullscreenBtn.setImageResource(R.drawable.ic_fullscreen_exit)
-					checkFullscreen = true
-				} else {
-					toolbar.isVisible = true
-					imageDetailsMenu.isVisible = true
-					imageFullscreenBtn.setImageResource(R.drawable.ic_fullscreen)
-					checkFullscreen = false
-				}
+				var checkFullscreenRes = fullScreen(checkFullscreen)
+				checkFullscreen = checkFullscreenRes
 			}
 		}
 		
@@ -134,48 +155,226 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 							return@OnNavigationItemSelectedListener true
 						}
 						R.id.details_menu_settings -> {
-							showTuneMenu()
+							showTune()
 							return@OnNavigationItemSelectedListener true
 						}
 						R.id.details_menu_info -> {
 							showInfo()
+							binding.imageFullscreenBtn.isVisible = false
+							binding.toolbar.isVisible = false
+							binding.backBtnOnImageInfo.isVisible = true
 							return@OnNavigationItemSelectedListener true
 						}
 					}
 					false
 				}
-			imageDetailsMenu.setOnNavigationItemSelectedListener(onClickBottomNavItem)
+			imageDetailsMenu.onNavigationItemSelectedListener = onClickBottomNavItem
+		}
+	}
+	
+	private fun insertDataBase() {
+		imagesViewModel.insertDatabase(
+			Images(
+				0, getBitmapFromView(imageDetailsIV)!!,
+				args.photo.user.name
+			)
+		)
+	}
+	
+	private fun fullScreen(checkFullscreen:Boolean):Boolean{
+		return if (!checkFullscreen) {
+			toolbar.isVisible = false
+			imageDetailsMenu.isVisible = false
+			imageFullscreenBtn.setImageResource(R.drawable.ic_fullscreen_exit)
+			true
+		} else {
+			toolbar.isVisible = true
+			imageDetailsMenu.isVisible = true
+			imageFullscreenBtn.setImageResource(R.drawable.ic_fullscreen)
+			false
+		}
+	}
+	
+	private fun fullScreenBackClick(checkFullscreen: Boolean){
+		if (checkFullscreen){
+		
+		}
+	}
+	
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+		activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
+			override fun handleOnBackPressed() {
+				if (popupWindow != null) {
+					hideOptionsWindow()
+				} else {
+					Navigation.findNavController(requireView())
+						.navigate(R.id.action_detailsImageFragment_to_search_fr)
+				}
+			}
+		})
+	}
+	
+	
+	private fun showTune() {
+		val inflater: LayoutInflater =
+			binding.root.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+		val popupView = inflater.inflate(R.layout.tune_menu, null)
+		val tuneMenu = TuneMenuBinding.bind(popupView)
+		val popupWidth = LinearLayout.LayoutParams.MATCH_PARENT
+		val popupHeight = LinearLayout.LayoutParams.WRAP_CONTENT
+		
+		popupWindow = PopupWindow(popupView, popupWidth, popupHeight)
+		popupWindow!!.update(
+			0,
+			0,
+			ViewGroup.LayoutParams.MATCH_PARENT,
+			ViewGroup.LayoutParams.WRAP_CONTENT
+		)
+		popupWindow!!.animationStyle = R.style.popup_anim
+		popupWindow!!.showAtLocation(view, Gravity.BOTTOM, 0, 0)
+		
+		tuneMenu.wallpaperToWorkSpaceBtn.setOnClickListener {
+			val wallpaperManager = WallpaperManager.getInstance(requireContext())
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+				wallpaperManager.setBitmap(
+					getBitmapFromView(imageDetailsIV),
+					null,
+					true,
+					WallpaperManager.FLAG_SYSTEM
+				)
+				Toast.makeText(
+					requireContext(),
+					"Обои рабочего стола успешно установлены!",
+					Toast.LENGTH_SHORT
+				).show()
+			} else {
+				Toast.makeText(
+					requireContext(),
+					"Неподходящая версия устройства!",
+					Toast.LENGTH_SHORT
+				).show()
+			}
+		}
+		tuneMenu.wallpaperToBlockScreenBtn.setOnClickListener {
+			val wallpaperManager = WallpaperManager.getInstance(requireContext())
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+				wallpaperManager.setBitmap(
+					getBitmapFromView(imageDetailsIV),
+					null,
+					true,
+					WallpaperManager.FLAG_LOCK
+				)
+				Toast.makeText(
+					requireContext(),
+					"Обои экрана блокировки успешно установлены!",
+					Toast.LENGTH_SHORT
+				).show()
+			} else {
+				Toast.makeText(
+					requireContext(),
+					"Неподходящая версия устройства!",
+					Toast.LENGTH_SHORT
+				).show()
+			}
+		}
+		tuneMenu.addToFavouritesBtn.setOnClickListener {
+			insertDataBase()
 		}
 		
+		binding.imageDetailsFullScreen.setOnClickListener {
+			if (popupWindow != null) popupWindow?.dismiss()
+		}
+		
+		binding.backBtnOnImageInfo.setOnClickListener {
+			popupWindow?.dismiss()
+			popupWindow = null
+		}
 	}
 	
-	
-	private fun showTuneMenu(){
-		val tuneMenu = TuneSheetDialog(getBitmapFromView(imageDetailsIV))
-		tuneMenu.show(requireFragmentManager(),"lol")
-	}
-	
-	private fun showInfo(){
+	private fun showInfo() {
+		val photo = args.photo
 		val inflater: LayoutInflater =
 			binding.root.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 		val popupView = inflater.inflate(R.layout.info_menu, null)
 		
+		val infoMenu = InfoMenuBinding.bind(popupView)
+		
 		val popupWidth = LinearLayout.LayoutParams.MATCH_PARENT
 		val popupHeight = LinearLayout.LayoutParams.WRAP_CONTENT
-		val popupWindow = PopupWindow(popupView, popupWidth, popupHeight)
-		popupWindow.update(0,0, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-		popupWindow.animationStyle = R.style.popup_anim
-		popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0)
-		binding.imageDetailsFullScreen.setOnClickListener {
-			popupWindow.dismiss()
+		popupWindow = PopupWindow(popupView, popupWidth, popupHeight)
+		popupWindow!!.update(
+			0,
+			0,
+			ViewGroup.LayoutParams.MATCH_PARENT,
+			ViewGroup.LayoutParams.WRAP_CONTENT
+		)
+		popupWindow!!.animationStyle = R.style.popup_anim
+		popupWindow!!.showAtLocation(view, Gravity.BOTTOM, 0, 0)
+		
+		Glide.with(this@DetailsImageFragment)
+			.load(photo.user.profile_image.large)
+			.error(R.drawable.ic_baseline_error_24)
+			.listener(object : RequestListener<Drawable> {
+				override fun onLoadFailed(
+					e: GlideException?,
+					model: Any?,
+					target: Target<Drawable>?,
+					isFirstResource: Boolean
+				): Boolean {
+					imageDetailsProgressbar.isVisible = false
+					return false
+				}
+				
+				override fun onResourceReady(
+					resource: Drawable?,
+					model: Any?,
+					target: Target<Drawable>?,
+					dataSource: DataSource?,
+					isFirstResource: Boolean
+				): Boolean {
+					imageDetailsProgressbar.isVisible = false
+					return false
+				}
+			})
+			.into(infoMenu.imageInfoAuthorPhoto)
+		infoMenu.imageInfoAuthorName.text = photo.user.name
+		infoMenu.imageInfoAuthorTag.text = photo.user.username
+		infoMenu.imageInfoAuthorInst.text = photo.user.instagram_username
+		infoMenu.imageInfoAuthorTwitter.text = photo.user.twitter_username
+		infoMenu.imageInfoPhotoTitle.text = photo.description
+		val inputFormat: DateFormat = SimpleDateFormat("yyyy-MM-dd")
+		val outputFormat: DateFormat = SimpleDateFormat("dd MMM yyyy")
+		val photoDate: Date = inputFormat.parse(photo.updated_at.substring(0, 10))!!
+		val formattedDate = outputFormat.format(photoDate)
+		infoMenu.imageInfoDate.text = formattedDate
+		infoMenu.imageInfoColor.text = photo.color
+		infoMenu.button.setOnClickListener {
+			toast("YES!!")
 		}
+		"px: ${photo.width} x ${photo.height}".also { infoMenu.imageInfoSize.text = it }
+		binding.imageDetailsFullScreen.setOnClickListener {
+			if (popupWindow != null) hideOptionsWindow()
+		}
+		
+		binding.backBtnOnImageInfo.setOnClickListener {
+			hideOptionsWindow()
+		}
+	}
+	
+	private fun hideOptionsWindow() {
+		binding.imageFullscreenBtn.isVisible = true
+		binding.toolbar.isVisible = true
+		popupWindow?.dismiss()
+		binding.backBtnOnImageInfo.isVisible = false
+		popupWindow = null
 	}
 	
 	
 	private fun getBitmapFromView(photo: ImageView): Bitmap? {
 		val bitmap = Bitmap.createBitmap(photo.width, photo.height, Bitmap.Config.ARGB_8888)
-		val convas = Canvas(bitmap)
-		photo.draw(convas)
+		val canvas = Canvas(bitmap)
+		photo.draw(canvas)
 		return bitmap
 	}
 	

@@ -51,7 +51,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:backgroundTint="@color/white"
                 android:src="@drawable/ic_3_columns"
-                app:tint="@color/secondary"/>
+                app:tint="@color/main"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.appbar.AppBarLayout

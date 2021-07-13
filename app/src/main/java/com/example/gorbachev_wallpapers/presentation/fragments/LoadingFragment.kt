@@ -18,10 +18,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
-
 class LoadingFragment : BaseFragment(R.layout.fragment_loading) {
 	
 	private lateinit var botNav: BottomNavigationView
+	
 	
 	override fun onCreateView(
 		inflater: LayoutInflater, container: ViewGroup?,
@@ -32,6 +32,7 @@ class LoadingFragment : BaseFragment(R.layout.fragment_loading) {
 		botNav = requireActivity().findViewById(R.id.bot_nav)
 		botNav.visibility = View.GONE
 		
+		
 		GlobalScope.launch(Dispatchers.Main) {
 			delay(2000)
 			Navigation.findNavController(requireView())
@@ -39,7 +40,7 @@ class LoadingFragment : BaseFragment(R.layout.fragment_loading) {
 			botNav.visibility = View.VISIBLE
 		}
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			val window:Window = requireActivity().window
+			val window: Window = requireActivity().window
 			val startColor: Int = window.statusBarColor
 			val endColor = ContextCompat.getColor(requireContext(), R.color.white)
 			ObjectAnimator.ofArgb(

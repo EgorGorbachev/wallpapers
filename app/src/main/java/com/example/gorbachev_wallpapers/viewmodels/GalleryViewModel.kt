@@ -1,6 +1,5 @@
 package com.example.gorbachev_wallpapers.viewmodels
 
-import android.app.DownloadManager
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

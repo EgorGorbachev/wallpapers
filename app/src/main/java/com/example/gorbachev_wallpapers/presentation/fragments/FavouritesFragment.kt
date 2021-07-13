@@ -1,21 +1,38 @@
 package com.example.gorbachev_wallpapers.presentation.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.example.gorbachev_wallpapers.R
+import com.example.gorbachev_wallpapers.databinding.FragmentDetailsImageBinding
+import com.example.gorbachev_wallpapers.databinding.FragmentFavouritesBinding
+import com.example.gorbachev_wallpapers.presentation.adapters.FavouritesFragmentsAdapter
 import com.example.gorbachev_wallpapers.presentation.base.BaseFragment
 
 
 class FavouritesFragment : BaseFragment(R.layout.fragment_favourites) {
-
-	override fun onCreateView(
-		inflater: LayoutInflater, container: ViewGroup?,
-		savedInstanceState: Bundle?
-	): View? {
-		// Inflate the layout for this fragment
-		return inflater.inflate(R.layout.fragment_favourites, container, false)
+	
+	private var _binding: FragmentFavouritesBinding? = null
+	private val binding get() = _binding!!
+	
+	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+		super.onViewCreated(view, savedInstanceState)
+		
+		_binding = FragmentFavouritesBinding.bind(view)
+		
+		setUpTabs()
 	}
-
+	
+	private fun setUpTabs() {
+		binding.apply {
+			val adapter = FavouritesFragmentsAdapter(childFragmentManager)
+			adapter.addFragment(FavouritesImagesFragment(), title = "images")
+			adapter.addFragment(FavouritesQueryFragment(), title = "queries")
+			viewPagerFavourites.adapter = adapter
+			tabLayoutFavourites.setupWithViewPager(viewPagerFavourites)
+			tabLayoutFavourites.getTabAt(0)!!.setIcon(R.drawable.ic_baseline_image_24)
+			tabLayoutFavourites.getTabAt(1)!!.setIcon(R.drawable.ic_baseline_favorite_24)
+			
+		}
+		
+	}
 }

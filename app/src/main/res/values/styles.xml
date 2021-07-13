@@ -4,7 +4,7 @@
         <item name="android:textSize">1sp</item>
     </style>
     <style name="ProgressBarStyle">
-        <item name="colorAccent">@color/secondary</item>
+        <item name="colorAccent">@color/main</item>
     </style>
     <style name="TuneMenuStyle" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/BottomSheetStyle</item>

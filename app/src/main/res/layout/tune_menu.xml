@@ -1,87 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/tuneMenuContainer"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp">
-
-    <LinearLayout
-        android:id="@+id/wallpaperToWorkSpaceBtn"
+<layout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/tuneMenuContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp">
+        android:background="@color/white"
+        android:orientation="vertical">
 
-
-        <ImageView
-            android:layout_width="0dp"
+        <LinearLayout
+            android:id="@+id/wallpaperToWorkSpaceBtn"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight=".2"
-            android:src="@drawable/ic_wallpaper" />
+            android:orientation="horizontal"
+            android:paddingTop="15dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingBottom="15dp">
 
-        <TextView
-            android:layout_width="0dp"
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight=".2"
+                android:src="@drawable/ic_wallpaper" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight=".7"
+                android:textColor="@color/text"
+                android:text="Установить как обои рабочего стола" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/wallpaperToBlockScreenBtn"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight=".7"
-            android:textColor="@color/text"
-            android:text="Установить как обои рабочего стола" />
+            android:orientation="horizontal"
+            android:paddingTop="15dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingBottom="15dp">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight=".2"
+                android:src="@drawable/ic_wallpaper" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight=".7"
+                android:text="Установить на заставку экрана блокировки"
+                android:textColor="@color/text" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/addToFavouritesBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="15dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingBottom="15dp">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight=".2"
+                android:src="@drawable/ic_baseline_favorite_24" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight=".7"
+                android:text="Сохранить в избранное"
+                android:textColor="@color/text" />
+
+        </LinearLayout>
 
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/wallpaperToBlockScreenBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp">
-
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight=".2"
-            android:src="@drawable/ic_wallpaper" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight=".7"
-            android:text="Установить на заставку экрана блокировки"
-            android:textColor="@color/text" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/addToFavouritesBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp">
-
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight=".2"
-            android:src="@drawable/ic_baseline_favorite_24" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight=".7"
-            android:text="Сохранить в избранное"
-            android:textColor="@color/text" />
-
-    </LinearLayout>
-
-</LinearLayout>
+</layout>

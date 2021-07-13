@@ -28,7 +28,6 @@ class UnsplashRecyclerAdapter(private val listener: OnItemClickListener) :
 	: PhotoViewHolder {
 		val binding =
 			RecyclerItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-		Log.d("lol", "lol")
 		return PhotoViewHolder(binding)
 	}
 	
