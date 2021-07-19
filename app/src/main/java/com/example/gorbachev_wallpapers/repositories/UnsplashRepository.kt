@@ -21,6 +21,7 @@ class UnsplashRepository @Inject constructor(
 	
 	val allDataImages: LiveData<List<Images>> = imagesDao.readAllData()
 	val allDataQueries: LiveData<List<Queries>> = imagesDao.readAllDataQuery()
+	val allDataFavQueries: LiveData<List<Queries>> = imagesDao.readAllFavouritesQueries()
 	
 	fun getSearchResults(query: String) =
 		Pager(

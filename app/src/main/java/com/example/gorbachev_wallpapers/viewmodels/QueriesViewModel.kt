@@ -30,7 +30,7 @@ class QueriesViewModel @ViewModelInject constructor(
 		return repository.isQueryExists(query)
 	}
 	
-	private fun update(query: Queries){
+	fun update(query: Queries){
 		viewModelScope.launch(Dispatchers.IO) {
 			repository.update(query)
 		}

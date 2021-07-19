@@ -13,7 +13,7 @@ data class Queries(
 	@PrimaryKey(autoGenerate = true)
 	val id: Int,
 	val query: String,
-	val like: Boolean,
+	var like: Boolean,
 	val queryCount: Int,
 	val time: String
 ) : Parcelable

@@ -35,4 +35,7 @@ interface ImagesDao {
 	
 	@Update
 	suspend fun update(query: Queries)
+	
+	@Query("SELECT * FROM queries_table WHERE `like`=0")
+	fun readAllFavouritesQueries(): LiveData<List<Queries>>
 }

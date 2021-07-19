@@ -1,22 +1,21 @@
 package com.example.gorbachev_wallpapers.presentation.adapters
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.gorbachev_wallpapers.R
-import com.example.gorbachev_wallpapers.databinding.HistoryItemBinding
+import com.example.gorbachev_wallpapers.databinding.FavouritesQueriesRecyclerItemBinding
 import com.example.gorbachev_wallpapers.models.Queries
+import com.example.gorbachev_wallpapers.presentation.adapters.FavouritesQueriesAdapter.*
 
-class QueriesHistoryRecyclerAdapter(
+class FavouritesQueriesAdapter(
 	private var listener: OnItemClick,
-	private var listenerLike: OnLikeClick
-) : ListAdapter<Queries, QueriesHistoryRecyclerAdapter.MyViewHolder>(PHOTO_COMPARATOR) {
+	private var listenerDelete: OnDeleteClick
+) : ListAdapter<Queries, MyViewHolder>(PHOTO_COMPARATOR) {
 	
-	inner class MyViewHolder(private var binding: HistoryItemBinding) :
+	inner class MyViewHolder(private var binding: FavouritesQueriesRecyclerItemBinding) :
 		RecyclerView.ViewHolder(binding.root) {
 		
 		init {
@@ -30,12 +29,12 @@ class QueriesHistoryRecyclerAdapter(
 				}
 			}
 			
-			binding.queryHistoryLikeButton.setOnClickListener {
+			binding.favQueryDeleteBtn.setOnClickListener {
 				val position = bindingAdapterPosition
 				if (position != RecyclerView.NO_POSITION) {
 					val item = getItem(position)
 					if (item != null) {
-						listenerLike.onLikeClick(item)
+						listenerDelete.onDeleteClick(item)
 					}
 				}
 			}
@@ -44,12 +43,8 @@ class QueriesHistoryRecyclerAdapter(
 		@SuppressLint("SetTextI18n")
 		fun bind(query: Queries) {
 			binding.apply {
-				queryHistoryTitle.text = query.query
-				queryHistoryInfo.text = "${query.queryCount}" + ", " + query.time
-				if (query.like){
-					queryHistoryLikeButton.setImageResource(R.drawable.ic_baseline_favorite_24)
-				} else queryHistoryLikeButton.setImageResource(R.drawable.ic_baseline_favorite_true_24)
-				
+				favQueryTitle.text = query.query
+				favQueryInfo.text = "${query.queryCount}" + ", " + query.time
 			}
 			
 		}
@@ -58,9 +53,9 @@ class QueriesHistoryRecyclerAdapter(
 	override fun onCreateViewHolder(
 		parent: ViewGroup,
 		viewType: Int
-	): QueriesHistoryRecyclerAdapter.MyViewHolder {
+	): MyViewHolder {
 		val binding =
-			HistoryItemBinding.inflate(
+			FavouritesQueriesRecyclerItemBinding.inflate(
 				LayoutInflater.from(parent.context),
 				parent,
 				false
@@ -69,7 +64,7 @@ class QueriesHistoryRecyclerAdapter(
 	}
 	
 	override fun onBindViewHolder(
-		holder: QueriesHistoryRecyclerAdapter.MyViewHolder,
+		holder: MyViewHolder,
 		position: Int
 	) {
 		val currentItem = getItem(position)
@@ -83,8 +78,8 @@ class QueriesHistoryRecyclerAdapter(
 		fun onItemClick(query: Queries)
 	}
 	
-	interface OnLikeClick {
-		fun onLikeClick(query: Queries)
+	interface OnDeleteClick {
+		fun onDeleteClick(query: Queries)
 	}
 	
 	companion object {
@@ -101,4 +96,5 @@ class QueriesHistoryRecyclerAdapter(
 		}
 		
 	}
+	
 }

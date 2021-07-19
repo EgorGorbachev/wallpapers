@@ -15,11 +15,12 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class FavouritesImagesFragment : BaseFragment(R.layout.fragment_favourites_images), FavouritesImagesRecyclerAdapter.OnItemClick,FavouritesImagesRecyclerAdapter.DeleteItem {
+class FavouritesImagesFragment : BaseFragment(R.layout.fragment_favourites_images),
+	FavouritesImagesRecyclerAdapter.OnItemClick, FavouritesImagesRecyclerAdapter.DeleteItem {
 	
 	private val viewModel by viewModels<FavouritesImagesViewModel>()
 	
-	private var adapter = FavouritesImagesRecyclerAdapter(this,this)
+	private var adapter = FavouritesImagesRecyclerAdapter(this, this)
 	
 	private lateinit var list: List<Images>
 	
@@ -29,7 +30,7 @@ class FavouritesImagesFragment : BaseFragment(R.layout.fragment_favourites_image
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		
-		val recyclerView : RecyclerView = requireView().findViewById(R.id.favouriteImagesContainer)
+		val recyclerView: RecyclerView = requireView().findViewById(R.id.favouriteImagesContainer)
 		recyclerView.setHasFixedSize(true)
 		recyclerView.adapter = adapter
 		
@@ -38,7 +39,7 @@ class FavouritesImagesFragment : BaseFragment(R.layout.fragment_favourites_image
 	}
 	
 	private fun showImage() {
-		viewModel.allData.observe(viewLifecycleOwner,{
+		viewModel.allData.observe(viewLifecycleOwner, {
 			adapter.submitList(it)
 		})
 	}
@@ -49,7 +50,7 @@ class FavouritesImagesFragment : BaseFragment(R.layout.fragment_favourites_image
 		)
 		findNavController().navigate(action)
 	}
-	
+
 	override fun deleteItem(image: Images) {
 		viewModel.deleteFromDatabase(image)
 	}

@@ -55,7 +55,8 @@ class HistoryFragment : BaseFragment(R.layout.fragment_history),
 	}
 	
 	override fun onLikeClick(query: Queries) {
-	
+		query.like = !query.like
+		viewModel.update(query)
+		adapter.notifyDataSetChanged()
 	}
-	
 }
