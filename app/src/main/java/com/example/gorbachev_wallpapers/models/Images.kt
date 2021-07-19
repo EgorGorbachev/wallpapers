@@ -1,16 +1,27 @@
 package com.example.gorbachev_wallpapers.models
 
 import android.graphics.Bitmap
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
+import android.os.Parcelable
+import androidx.room.*
+import kotlinx.android.parcel.Parcelize
 import java.io.ByteArrayOutputStream
 
+@Parcelize
 @Entity(tableName = "images_table")
 data class Images(
-	@PrimaryKey(autoGenerate = true)
-	val id: Int,
+	@PrimaryKey()
+	val id: String,
 	val img: Bitmap,
-	val lol: String
-)
+	val imageProfile:Bitmap?,
+	val name: String,
+	val username: String,
+	val instagram_username: String?,
+	val twitter_username: String?,
+	val description: String?,
+	val date: String?,
+	val color: String?,
+	val width: Int?,
+	val height: Int?,
+	val query: String
+): Parcelable
 

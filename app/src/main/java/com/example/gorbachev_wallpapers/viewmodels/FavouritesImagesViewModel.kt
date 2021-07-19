@@ -12,7 +12,7 @@ class FavouritesImagesViewModel @ViewModelInject constructor(
 	private val repository: UnsplashRepository
 ) : ViewModel() {
 	
-	val allData:LiveData<List<Images>> =repository.allData
+	val allData:LiveData<List<Images>> =repository.allDataImages
 	
 	fun insertDatabase(image:Images){
 		GlobalScope.launch {

@@ -9,6 +9,15 @@
         android:layout_height="match_parent"
         tools:context=".presentation.fragments.DetailsImageFragment">
 
+        <ImageView
+            android:id="@+id/goneImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="56dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/toolbar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/toolbar" />
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -23,8 +32,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Forest"
-                android:textStyle="bold"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black"
+                android:textStyle="bold" />
         </androidx.appcompat.widget.Toolbar>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -48,6 +57,7 @@
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/bg_for_image_details_menu"
+            app:itemBackground="@android:color/transparent"
             app:itemIconTint="@drawable/bottom_nav_details_icon_color_selector"
             app:itemTextColor="@drawable/bottom_nav_details_icon_color_selector"
             app:labelVisibilityMode="unlabeled"

@@ -1,32 +1,25 @@
 package com.example.gorbachev_wallpapers.presentation.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gorbachev_wallpapers.R
 import com.example.gorbachev_wallpapers.databinding.FragmentFavouritesImagesBinding
 import com.example.gorbachev_wallpapers.models.Images
 import com.example.gorbachev_wallpapers.presentation.adapters.FavouritesImagesRecyclerAdapter
 import com.example.gorbachev_wallpapers.presentation.base.BaseFragment
-import com.example.gorbachev_wallpapers.presentation.util.Converters
 import com.example.gorbachev_wallpapers.viewmodels.FavouritesImagesViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
-class FavouritesImagesFragment : BaseFragment(R.layout.fragment_favourites_images) {
+class FavouritesImagesFragment : BaseFragment(R.layout.fragment_favourites_images), FavouritesImagesRecyclerAdapter.OnItemClick,FavouritesImagesRecyclerAdapter.DeleteItem {
 	
 	private val viewModel by viewModels<FavouritesImagesViewModel>()
 	
-	private lateinit var adapter: FavouritesImagesRecyclerAdapter
+	private var adapter = FavouritesImagesRecyclerAdapter(this,this)
 	
 	private lateinit var list: List<Images>
 	
@@ -36,22 +29,29 @@ class FavouritesImagesFragment : BaseFragment(R.layout.fragment_favourites_image
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		
+		val recyclerView : RecyclerView = requireView().findViewById(R.id.favouriteImagesContainer)
+		recyclerView.setHasFixedSize(true)
+		recyclerView.adapter = adapter
+		
 		_binding = FragmentFavouritesImagesBinding.bind(view)
 		showImage()
-		GlobalScope.launch(Dispatchers.Main) {
-			delay(1000)
-			adapter.setData(list)
-		}
 	}
 	
 	private fun showImage() {
 		viewModel.allData.observe(viewLifecycleOwner,{
-			adapter = FavouritesImagesRecyclerAdapter(it, viewModel)
-			val recyclerView: RecyclerView = requireView().findViewById(R.id.favouriteImagesContainer)
-			recyclerView.layoutManager = LinearLayoutManager(requireContext())
-			recyclerView.adapter = adapter
-			list = it
+			adapter.submitList(it)
 		})
-
 	}
+	
+	override fun onItemClick(image: Images) {
+		val action = FavouritesFragmentDirections.actionFavouritesFrToDetailsImageFragment(
+			image = image
+		)
+		findNavController().navigate(action)
+	}
+	
+	override fun deleteItem(image: Images) {
+		viewModel.deleteFromDatabase(image)
+	}
+	
 }

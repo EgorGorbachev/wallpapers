@@ -1,54 +1,94 @@
 package com.example.gorbachev_wallpapers.presentation.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.gorbachev_wallpapers.R
+import com.example.gorbachev_wallpapers.databinding.FavouritesImagesRecyclerItemBinding
 import com.example.gorbachev_wallpapers.models.Images
-import com.example.gorbachev_wallpapers.viewmodels.FavouritesImagesViewModel
-import com.example.gorbachev_wallpapers.viewmodels.ImagesViewModel
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-
 
 class FavouritesImagesRecyclerAdapter(
-	private var imgList: List<Images>,
-	private var viewModel: FavouritesImagesViewModel
-) : RecyclerView.Adapter<FavouritesImagesRecyclerAdapter.MyViewHolder>() {
+	private var listener: OnItemClick,
+	private var deleteListener: DeleteItem,
+) : ListAdapter<Images, FavouritesImagesRecyclerAdapter.MyViewHolder>(PHOTO_COMPARATOR) {
 	
 	
-	class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-		var img: ImageView = itemView.findViewById(R.id.favouritesImageIV)
-		var deleteBtn: FloatingActionButton = itemView.findViewById(R.id.deleteFavImgButton)
+	inner class MyViewHolder(private var binding: FavouritesImagesRecyclerItemBinding) :
+		RecyclerView.ViewHolder(binding.root) {
 		
+		init {
+			binding.root.setOnClickListener {
+				val position = bindingAdapterPosition
+				if (position != RecyclerView.NO_POSITION) {
+					val item = getItem(position)
+					if (item != null) {
+						listener.onItemClick(item)
+					}
+				}
+			}
+			binding.deleteFavImgButton.setOnClickListener {
+				val position = bindingAdapterPosition
+				if (position != RecyclerView.NO_POSITION) {
+					val item = getItem(position)
+					if (item != null) {
+						deleteListener.deleteItem(item)
+					}
+				}
+			}
+		}
+		
+		fun bind(image: Images) {
+			binding.apply {
+				Glide.with(itemView).load(image.img).centerCrop()
+					.transition(DrawableTransitionOptions.withCrossFade())
+					.error(R.drawable.ic_baseline_error_24).into(favouritesImageIV)
+			}
+			
+		}
 	}
 	
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-		val itemView =
-			LayoutInflater.from(parent.context)
-				.inflate(R.layout.favourites_images_recycler_item, parent, false)
-		return MyViewHolder(itemView)
+		val binding =
+			FavouritesImagesRecyclerItemBinding.inflate(
+				LayoutInflater.from(parent.context),
+				parent,
+				false
+			)
+		return MyViewHolder(binding)
 	}
 	
 	
 	override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-		holder.img.setImageBitmap(imgList[position].img)
-		holder.deleteBtn.setOnClickListener {
-			viewModel.deleteFromDatabase(imgList[position])
+		val currentItem = getItem(position)
+		
+		if (currentItem != null) {
+			holder.bind(currentItem)
 		}
 	}
 	
-	override fun getItemCount() = imgList.size
+	interface OnItemClick {
+		fun onItemClick(image: Images)
+	}
 	
-	fun setData(newPersonsList: List<Images>) {
-		val diffUtil = FavImgDiffUtil(imgList, newPersonsList)
-		val diffResults = DiffUtil.calculateDiff(diffUtil)
-		imgList = newPersonsList
-		val s: Set<Images> = LinkedHashSet(imgList)
-		imgList = s.toList()
-		diffResults.dispatchUpdatesTo(this)
+	interface DeleteItem {
+		fun deleteItem(image: Images)
+	}
+	
+	companion object {
+		private val PHOTO_COMPARATOR = object : DiffUtil.ItemCallback<Images>() {
+			override fun areItemsTheSame(oldItem: Images, newItem: Images) =
+				oldItem.id == newItem.id
+			
+			override fun areContentsTheSame(
+				oldItem: Images,
+				newItem: Images
+			) = oldItem == newItem
+		}
+		
 	}
 	
 }

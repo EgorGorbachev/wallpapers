@@ -11,17 +11,22 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.gorbachev_gmail.sharedPref.SharedPreferences
 import com.example.gorbachev_wallpapers.R
 import com.example.gorbachev_wallpapers.databinding.FragmentGalleryBinding
+import com.example.gorbachev_wallpapers.models.Queries
 import com.example.gorbachev_wallpapers.models.UnsplashPhoto
 import com.example.gorbachev_wallpapers.presentation.adapters.UnsplashLoadStateAdapter
 import com.example.gorbachev_wallpapers.presentation.adapters.UnsplashRecyclerAdapter
 import com.example.gorbachev_wallpapers.presentation.base.BaseFragment
 import com.example.gorbachev_wallpapers.sharedPref.QUERY
 import com.example.gorbachev_wallpapers.viewmodels.GalleryViewModel
+import com.example.gorbachev_wallpapers.viewmodels.ImagesViewModel
+import com.example.gorbachev_wallpapers.viewmodels.QueriesViewModel
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 @AndroidEntryPoint
@@ -29,6 +34,7 @@ class GalleryFragment : BaseFragment(R.layout.fragment_gallery),
 	UnsplashRecyclerAdapter.OnItemClickListener {
 	
 	private val viewModel by viewModels<GalleryViewModel>()
+	private val queriesViewModel by viewModels<QueriesViewModel>()
 	
 	private var _binding: FragmentGalleryBinding? = null
 	private val binding get() = _binding!!
@@ -101,6 +107,7 @@ class GalleryFragment : BaseFragment(R.layout.fragment_gallery),
 					viewModel.searchPhotos(query)
 					searchView.clearFocus()
 					SP.setPref(QUERY, query)
+					insertQueryInDatabase(query,false, currentTime())
 				}
 				return true
 			}
@@ -136,11 +143,27 @@ class GalleryFragment : BaseFragment(R.layout.fragment_gallery),
 		
 	}
 	
+	private fun currentTime():String{
+		val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+		return sdf.format(Date())
+	}
+	
+	private fun insertQueryInDatabase(query: String, like: Boolean, time:String){
+		queriesViewModel.insertDatabase(
+			Queries(
+				0,
+				query,
+				like,
+				100,
+				time
+			)
+		)
+	}
 	
 	override fun onItemClick(photo: UnsplashPhoto) {
 		val action = GalleryFragmentDirections.actionSearchFrToDetailsImageFragment(
-			photo,
-			viewModel.getCurrentQuery()
+			photo = photo,
+			query = viewModel.getCurrentQuery()
 		)
 		findNavController().navigate(action)
 	}

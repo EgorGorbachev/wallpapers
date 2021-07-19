@@ -1,19 +1,12 @@
 package com.example.gorbachev_wallpapers.presentation.adapters
 
-import android.content.DialogInterface
-import android.graphics.drawable.Drawable
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.request.RequestListener
 import com.example.gorbachev_wallpapers.R
 import com.example.gorbachev_wallpapers.databinding.RecyclerItemBinding
 import com.example.gorbachev_wallpapers.models.UnsplashPhoto
@@ -24,8 +17,9 @@ class UnsplashRecyclerAdapter(private val listener: OnItemClickListener) :
 	
 	override fun onCreateViewHolder(
 		parent: ViewGroup,
-		viewType: Int)
-	: PhotoViewHolder {
+		viewType: Int
+	)
+			: PhotoViewHolder {
 		val binding =
 			RecyclerItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 		return PhotoViewHolder(binding)
@@ -46,9 +40,9 @@ class UnsplashRecyclerAdapter(private val listener: OnItemClickListener) :
 		init {
 			binding.root.setOnClickListener {
 				val position = bindingAdapterPosition
-				if(position != RecyclerView.NO_POSITION) {
+				if (position != RecyclerView.NO_POSITION) {
 					val item = getItem(position)
-					if (item !=null){
+					if (item != null) {
 						listener.onItemClick(item)
 					}
 				}
@@ -67,7 +61,7 @@ class UnsplashRecyclerAdapter(private val listener: OnItemClickListener) :
 		
 	}
 	
-	interface OnItemClickListener{
+	interface OnItemClickListener {
 		fun onItemClick(photo: UnsplashPhoto)
 	}
 	

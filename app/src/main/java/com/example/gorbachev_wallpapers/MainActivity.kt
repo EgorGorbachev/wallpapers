@@ -1,18 +1,15 @@
 package com.example.gorbachev_wallpapers
 
+import android.database.CursorWindow
 import android.os.Bundle
-import android.util.Log
-import android.view.Window
-import android.view.WindowManager
-import android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
-import com.example.gorbachev_wallpapers.models.UnsplashPhoto
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx
 import dagger.hilt.android.AndroidEntryPoint
+import java.lang.reflect.Field
+
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -32,6 +29,14 @@ class MainActivity : AppCompatActivity() {
 		val navHostFragment = supportFragmentManager.findFragmentById((R.id.fragmentContainerView)) as NavHostFragment
 		val navController = navHostFragment.findNavController()
 		botNav.setupWithNavController(navController)
+		
+		try {
+			val field: Field = CursorWindow::class.java.getDeclaredField("sCursorWindowSize")
+			field.isAccessible = true
+			field.set(null, 100 * 1024 * 1024) //the 100MB is the new size
+		} catch (e: Exception) {
+			e.printStackTrace()
+		}
 		
 	}
 }

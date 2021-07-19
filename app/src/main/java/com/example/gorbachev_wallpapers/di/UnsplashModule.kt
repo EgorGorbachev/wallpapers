@@ -1,7 +1,6 @@
 package com.example.gorbachev_wallpapers.di
 
 import android.content.Context
-import android.provider.MediaStore
 import androidx.room.Room
 import com.example.gorbachev_wallpapers.api.UnsplashApi
 import com.example.gorbachev_wallpapers.repositories.data.image_database.ImagesDao
@@ -46,4 +45,5 @@ object UnsplashModule {
 	fun provideSearchDAO(appDatabase: ImagesDatabase): ImagesDao {
 		return appDatabase.ImagesDao()
 	}
+	
 }

@@ -1,17 +1,20 @@
 package com.example.gorbachev_wallpapers.presentation.fragments
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Base64.*
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -26,11 +29,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -41,7 +41,6 @@ import com.example.gorbachev_wallpapers.databinding.FragmentDetailsImageBinding
 import com.example.gorbachev_wallpapers.databinding.InfoMenuBinding
 import com.example.gorbachev_wallpapers.databinding.TuneMenuBinding
 import com.example.gorbachev_wallpapers.models.Images
-import com.example.gorbachev_wallpapers.presentation.adapters.FavouritesImagesRecyclerAdapter
 import com.example.gorbachev_wallpapers.presentation.base.BaseFragment
 import com.example.gorbachev_wallpapers.viewmodels.ImagesViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -62,8 +61,6 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 	private var _binding: FragmentDetailsImageBinding? = null
 	private val binding get() = _binding!!
 	
-	private lateinit var adapter: FavouritesImagesRecyclerAdapter
-	
 	private lateinit var botNav: BottomNavigationViewEx
 	
 	private val args by navArgs<DetailsImageFragmentArgs>()
@@ -71,6 +68,8 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 	var WRITE_EXTERNAL_STORAGE_PERMISSION_CODE = 101
 	
 	private var popupWindow: PopupWindow? = null
+	
+	
 	
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
@@ -82,12 +81,13 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 		botNav.visibility = View.GONE
 		botNav.enableAnimation(false)
 		
+		val photo = args.photo
+		val image = args.image
+		
 		val imageDetailsMenu = view.findViewById(R.id.imageDetailsMenu) as BottomNavigationViewEx
 		imageDetailsMenu.enableAnimation(false);
 		imageDetailsMenu.enableShiftingMode(false);
 		imageDetailsMenu.enableItemShiftingMode(false);
-		
-		val photo = args.photo
 		
 		(activity as AppCompatActivity).supportActionBar
 		(activity as AppCompatActivity).setSupportActionBar(binding.toolbar)
@@ -97,6 +97,7 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 			
 			title = null
 		}
+		
 		binding.toolbar.setNavigationOnClickListener {
 			Navigation.findNavController(requireView())
 				.navigate(R.id.action_detailsImageFragment_to_search_fr)
@@ -104,36 +105,68 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 		}
 		
 		binding.apply {
-			
-			Glide.with(this@DetailsImageFragment)
-				.load(photo.urls.regular)
-				.error(R.drawable.ic_baseline_error_24)
-				.listener(object : RequestListener<Drawable> {
-					override fun onLoadFailed(
-						e: GlideException?,
-						model: Any?,
-						target: Target<Drawable>?,
-						isFirstResource: Boolean
-					): Boolean {
-						imageDetailsProgressbar.isVisible = false
-						return false
-					}
-					
-					override fun onResourceReady(
-						resource: Drawable?,
-						model: Any?,
-						target: Target<Drawable>?,
-						dataSource: DataSource?,
-						isFirstResource: Boolean
-					): Boolean {
-						imageDetailsProgressbar.isVisible = false
-						return false
-					}
-				})
-				.into(imageDetailsIV)
-			
-			val query = args.query
-			imageDetailsQuery.text = query
+			if (photo != null) {
+				Glide.with(this@DetailsImageFragment)
+					.load(photo.urls.full)
+					.error(R.drawable.ic_baseline_error_24)
+					.listener(object : RequestListener<Drawable> {
+						override fun onLoadFailed(
+							e: GlideException?,
+							model: Any?,
+							target: Target<Drawable>?,
+							isFirstResource: Boolean
+						): Boolean {
+							imageDetailsProgressbar.isVisible = false
+							return false
+						}
+						
+						override fun onResourceReady(
+							resource: Drawable?,
+							model: Any?,
+							target: Target<Drawable>?,
+							dataSource: DataSource?,
+							isFirstResource: Boolean
+						): Boolean {
+							imageDetailsProgressbar.isVisible = false
+							return false
+						}
+					})
+					.into(imageDetailsIV)
+				Glide.with(this@DetailsImageFragment)
+					.load(photo.user.profile_image.medium)
+					.error(R.drawable.ic_baseline_error_24)
+					.into(goneImage)
+				val query = args.query
+				imageDetailsQuery.text = query
+			} else {
+				Glide.with(this@DetailsImageFragment)
+					.load(image?.img)
+					.error(R.drawable.ic_baseline_error_24)
+					.listener(object : RequestListener<Drawable> {
+						override fun onLoadFailed(
+							e: GlideException?,
+							model: Any?,
+							target: Target<Drawable>?,
+							isFirstResource: Boolean
+						): Boolean {
+							imageDetailsProgressbar.isVisible = false
+							return false
+						}
+						
+						override fun onResourceReady(
+							resource: Drawable?,
+							model: Any?,
+							target: Target<Drawable>?,
+							dataSource: DataSource?,
+							isFirstResource: Boolean
+						): Boolean {
+							imageDetailsProgressbar.isVisible = false
+							return false
+						}
+					})
+					.into(imageDetailsIV)
+				imageDetailsQuery.text = image?.query
+			}
 		}
 		
 		
@@ -172,16 +205,8 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 		}
 	}
 	
-	private fun insertDataBase() {
-		imagesViewModel.insertDatabase(
-			Images(
-				0, getBitmapFromView(imageDetailsIV)!!,
-				args.photo.user.name
-			)
-		)
-	}
 	
-	private fun fullScreen(checkFullscreen:Boolean):Boolean{
+	private fun fullScreen(checkFullscreen: Boolean): Boolean {
 		return if (!checkFullscreen) {
 			toolbar.isVisible = false
 			imageDetailsMenu.isVisible = false
@@ -192,12 +217,6 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 			imageDetailsMenu.isVisible = true
 			imageFullscreenBtn.setImageResource(R.drawable.ic_fullscreen)
 			false
-		}
-	}
-	
-	private fun fullScreenBackClick(checkFullscreen: Boolean){
-		if (checkFullscreen){
-		
 		}
 	}
 	
@@ -282,6 +301,10 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 			insertDataBase()
 		}
 		
+		if (args.photo == null) {
+			tuneMenu.addToFavouritesBtn.isVisible = false
+		}
+		
 		binding.imageDetailsFullScreen.setOnClickListener {
 			if (popupWindow != null) popupWindow?.dismiss()
 		}
@@ -292,8 +315,10 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 		}
 	}
 	
+	
 	private fun showInfo() {
 		val photo = args.photo
+		val image = args.image
 		val inflater: LayoutInflater =
 			binding.root.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 		val popupView = inflater.inflate(R.layout.info_menu, null)
@@ -311,48 +336,81 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 		)
 		popupWindow!!.animationStyle = R.style.popup_anim
 		popupWindow!!.showAtLocation(view, Gravity.BOTTOM, 0, 0)
-		
-		Glide.with(this@DetailsImageFragment)
-			.load(photo.user.profile_image.large)
-			.error(R.drawable.ic_baseline_error_24)
-			.listener(object : RequestListener<Drawable> {
-				override fun onLoadFailed(
-					e: GlideException?,
-					model: Any?,
-					target: Target<Drawable>?,
-					isFirstResource: Boolean
-				): Boolean {
-					imageDetailsProgressbar.isVisible = false
-					return false
-				}
-				
-				override fun onResourceReady(
-					resource: Drawable?,
-					model: Any?,
-					target: Target<Drawable>?,
-					dataSource: DataSource?,
-					isFirstResource: Boolean
-				): Boolean {
-					imageDetailsProgressbar.isVisible = false
-					return false
-				}
-			})
-			.into(infoMenu.imageInfoAuthorPhoto)
-		infoMenu.imageInfoAuthorName.text = photo.user.name
-		infoMenu.imageInfoAuthorTag.text = photo.user.username
-		infoMenu.imageInfoAuthorInst.text = photo.user.instagram_username
-		infoMenu.imageInfoAuthorTwitter.text = photo.user.twitter_username
-		infoMenu.imageInfoPhotoTitle.text = photo.description
-		val inputFormat: DateFormat = SimpleDateFormat("yyyy-MM-dd")
-		val outputFormat: DateFormat = SimpleDateFormat("dd MMM yyyy")
-		val photoDate: Date = inputFormat.parse(photo.updated_at.substring(0, 10))!!
-		val formattedDate = outputFormat.format(photoDate)
-		infoMenu.imageInfoDate.text = formattedDate
-		infoMenu.imageInfoColor.text = photo.color
-		infoMenu.button.setOnClickListener {
-			toast("YES!!")
+		if (photo != null) {
+			if (photo.user.profile_image.large != null) {
+				Glide.with(this@DetailsImageFragment)
+					.load(photo.user.profile_image.large)
+					.error(R.drawable.ic_baseline_error_24)
+					.listener(object : RequestListener<Drawable> {
+						override fun onLoadFailed(
+							e: GlideException?,
+							model: Any?,
+							target: Target<Drawable>?,
+							isFirstResource: Boolean
+						): Boolean {
+							imageDetailsProgressbar.isVisible = false
+							return false
+						}
+						
+						override fun onResourceReady(
+							resource: Drawable?,
+							model: Any?,
+							target: Target<Drawable>?,
+							dataSource: DataSource?,
+							isFirstResource: Boolean
+						): Boolean {
+							imageDetailsProgressbar.isVisible = false
+							return false
+						}
+					})
+					.into(infoMenu.imageInfoAuthorPhoto)
+			} else infoMenu.imageInfoAuthorPhoto.setImageResource(R.drawable.ic_baseline_person_24)
+			
+			infoMenu.imageInfoAuthorName.text = photo.user.name
+			infoMenu.imageInfoAuthorTag.text = photo.user.username
+			
+			if (photo.user.instagram_username != null) {
+				infoMenu.imageInfoAuthorInst.text = photo.user.instagram_username
+			} else infoMenu.instaInfoContainer.isVisible = false
+			
+			if (photo.user.twitter_username != null) {
+				infoMenu.imageInfoAuthorTwitter.text = photo.user.twitter_username
+			} else infoMenu.twitterInfoContainer.isVisible = false
+			
+			if (photo.description != null) {
+				infoMenu.imageInfoPhotoTitle.text = photo.description
+			} else infoMenu.imageInfoPhotoTitle.isVisible = false
+			
+			val formattedDate = dateConvert(photo.updated_at)
+			infoMenu.imageInfoDate.text = formattedDate
+			
+			infoMenu.imageInfoColor.text = photo.color
+			
+			"px: ${photo.width} x ${photo.height}".also { infoMenu.imageInfoSize.text = it }
+			
+		} else {
+			infoMenu.imageInfoAuthorPhoto.setImageBitmap(image?.imageProfile)
+			
+			infoMenu.imageInfoAuthorName.text = image?.name
+			infoMenu.imageInfoAuthorTag.text = image?.username
+			
+			if (image?.instagram_username != null) {
+				infoMenu.imageInfoAuthorInst.text = image.instagram_username
+			} else infoMenu.instaInfoContainer.isVisible = false
+			
+			if (image?.twitter_username != null) {
+				infoMenu.imageInfoAuthorTwitter.text = image.twitter_username
+			} else infoMenu.twitterInfoContainer.isVisible = false
+			if (image?.description!=null) {
+				infoMenu.imageInfoPhotoTitle.text = image.description
+			} else infoMenu.imageInfoPhotoTitle.isVisible = false
+			
+			infoMenu.imageInfoDate.text = image?.date
+			
+			infoMenu.imageInfoColor.text = image?.color
+
+			"px: ${image?.width} x ${image?.height}".also { infoMenu.imageInfoSize.text = it }
 		}
-		"px: ${photo.width} x ${photo.height}".also { infoMenu.imageInfoSize.text = it }
 		binding.imageDetailsFullScreen.setOnClickListener {
 			if (popupWindow != null) hideOptionsWindow()
 		}
@@ -360,6 +418,36 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 		binding.backBtnOnImageInfo.setOnClickListener {
 			hideOptionsWindow()
 		}
+	}
+	
+	@SuppressLint("SimpleDateFormat")
+	private fun dateConvert(date: String): String {
+		val inputFormat: DateFormat = SimpleDateFormat("yyyy-MM-dd")
+		val outputFormat: DateFormat = SimpleDateFormat("dd MMM yyyy")
+		val photoDate: Date = inputFormat.parse(date.substring(0, 10))!!
+		return outputFormat.format(photoDate)
+	}
+	
+	private fun insertDataBase() {
+		val formattedDate = dateConvert(args.photo?.updated_at!!)
+		
+		imagesViewModel.insertDatabase(
+			Images(
+				args.photo!!.id,
+				getBitmapFromView(imageDetailsIV)!!,
+				getBitmapFromView(goneImage),
+				args.photo?.user!!.name,
+				args.photo?.user!!.username,
+				args.photo?.user!!.instagram_username,
+				args.photo?.user!!.twitter_username,
+				args.photo?.description,
+				formattedDate,
+				args.photo?.color,
+				args.photo?.width,
+				args.photo?.height,
+				args.query!!
+			)
+		)
 	}
 	
 	private fun hideOptionsWindow() {
@@ -379,7 +467,6 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 	}
 	
 	private fun getImageUri(context: Context, photo: Bitmap): Uri? {
-		
 		val bytes = ByteArrayOutputStream()
 		photo.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
 		val path =
@@ -437,7 +524,11 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 		fun innerCheck(name: String) {
 			if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-				Toast.makeText(requireActivity(), "$name permission refused", Toast.LENGTH_SHORT)
+				Toast.makeText(
+					requireActivity(),
+					"$name permission refused",
+					Toast.LENGTH_SHORT
+				)
 					.show()
 			} else {
 				toast("$name permission granted")
