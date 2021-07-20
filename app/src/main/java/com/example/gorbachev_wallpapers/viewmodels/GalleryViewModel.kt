@@ -11,25 +11,26 @@ import com.example.gorbachev_wallpapers.repositories.UnsplashRepository
 
 class GalleryViewModel @ViewModelInject constructor(
 	private val repository: UnsplashRepository
-): ViewModel() {
+) : ViewModel() {
 	
 	private val currentQuery = MutableLiveData(DEFAULT_QUERY)
 	
 	val photos = currentQuery.switchMap { queryString ->
 		repository.getSearchResults(queryString).cachedIn(viewModelScope)
-	
 	}
 	
-	fun searchPhotos(query: String){
+	suspend fun getTotal(query: String) = repository.getTotal(query)
+	
+	fun searchPhotos(query: String) {
 		currentQuery.value = query
 	}
 	
-	fun getCurrentQuery():String{
+	fun getCurrentQuery(): String {
 		return currentQuery.value!!
 	}
 	
 	companion object {
 		private const val DEFAULT_QUERY = "Forest"
 	}
-
+	
 }

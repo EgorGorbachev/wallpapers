@@ -2,8 +2,10 @@ package com.example.gorbachev_wallpapers.presentation.fragments
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gorbachev_wallpapers.R
 import com.example.gorbachev_wallpapers.databinding.FragmentFavouritesImagesBinding
@@ -33,6 +35,10 @@ class FavouritesImagesFragment : BaseFragment(R.layout.fragment_favourites_image
 		val recyclerView: RecyclerView = requireView().findViewById(R.id.favouriteImagesContainer)
 		recyclerView.setHasFixedSize(true)
 		recyclerView.adapter = adapter
+		val layoutManager = LinearLayoutManager(requireContext())
+		layoutManager.reverseLayout = true
+		layoutManager.stackFromEnd = true
+		recyclerView.layoutManager = layoutManager
 		
 		_binding = FragmentFavouritesImagesBinding.bind(view)
 		showImage()
@@ -41,6 +47,7 @@ class FavouritesImagesFragment : BaseFragment(R.layout.fragment_favourites_image
 	private fun showImage() {
 		viewModel.allData.observe(viewLifecycleOwner, {
 			adapter.submitList(it)
+			binding.nullImagesMes.isVisible = it.isNullOrEmpty()
 		})
 	}
 	
@@ -50,7 +57,7 @@ class FavouritesImagesFragment : BaseFragment(R.layout.fragment_favourites_image
 		)
 		findNavController().navigate(action)
 	}
-
+	
 	override fun deleteItem(image: Images) {
 		viewModel.deleteFromDatabase(image)
 	}

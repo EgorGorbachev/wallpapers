@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -29,7 +28,7 @@
                     android:id="@+id/cardView"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    app:cardCornerRadius="50dp"
+                    app:cardCornerRadius="@dimen/profile_image_radius"
                     app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintEnd_toStartOf="@+id/guideline7"
                     app:layout_constraintStart_toStartOf="@+id/guideline3"
@@ -47,13 +46,11 @@
 
                 <TextView
                     android:id="@+id/imageInfoAuthorName"
+                    style="@style/text_black_bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="Jeff Sheldon"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
+                    android:textSize="@dimen/profile_name_text"
                     app:layout_constraintStart_toStartOf="@+id/guideline5"
                     app:layout_constraintTop_toTopOf="@+id/guideline4" />
 
@@ -61,7 +58,6 @@
                     android:id="@+id/imageInfoAuthorTag"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="\@ugmonk"
                     app:layout_constraintStart_toStartOf="@+id/guideline5"
                     app:layout_constraintTop_toBottomOf="@+id/imageInfoAuthorName" />
 
@@ -80,12 +76,10 @@
 
                     <TextView
                         android:id="@+id/imageInfoAuthorInst"
+                        style="@style/text_black_bold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:text="instantgrammer"
-                        android:textColor="@color/black"
-                        android:textStyle="bold" />
+                        android:layout_marginStart="20dp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -103,22 +97,20 @@
 
                     <TextView
                         android:id="@+id/imageInfoAuthorTwitter"
+                        style="@style/text_black_bold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:text="ugmonk"
-                        android:textColor="@color/black"
-                        android:textStyle="bold" />
+                        android:layout_marginStart="20dp" />
                 </LinearLayout>
 
                 <Button
-                    android:id="@+id/button"
+                    android:id="@+id/portfolioBtn"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:background="@drawable/info_btn"
                     android:drawableTint="@color/main"
-                    android:text="ПОРТФОЛИО"
+                    android:text="@string/portfolio_btn"
                     app:layout_constraintEnd_toStartOf="@+id/guideline11"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/guideline3"
@@ -126,25 +118,22 @@
 
                 <TextView
                     android:id="@+id/imageInfoPhotoTitle"
+                    style="@style/text_black_bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="A man drinking a coffee"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
+                    android:textSize="@dimen/image_info_photo_title"
                     app:layout_constraintEnd_toStartOf="@+id/guideline11"
                     app:layout_constraintStart_toStartOf="@+id/guideline3"
-                    app:layout_constraintTop_toBottomOf="@+id/button" />
+                    app:layout_constraintTop_toBottomOf="@+id/portfolioBtn" />
 
                 <LinearLayout
                     android:id="@+id/dataInfoContainer"
+                    style="@style/image_info_card"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_marginTop="16dp"
                     android:background="@drawable/info_card_date_bg"
-                    android:gravity="center"
-                    android:orientation="vertical"
                     app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintEnd_toStartOf="@+id/guideline16"
                     app:layout_constraintStart_toStartOf="@+id/guideline14"
@@ -157,30 +146,26 @@
                         android:src="@drawable/ic_access_time" />
 
                     <TextView
+                        style="@style/image_info_card_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="Дата"
-                        android:textColor="@color/black" />
+                        android:text="@string/info_card_date_title" />
 
                     <TextView
                         android:id="@+id/imageInfoDate"
+                        style="@style/image_info_card_text"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="18 ноября 2014"
-                        android:textColor="@color/black" />
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/colorInfoContainer"
+                    style="@style/image_info_card"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_marginTop="16dp"
                     android:background="@drawable/info_card_color"
-                    android:gravity="center"
-                    android:orientation="vertical"
                     app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintEnd_toStartOf="@+id/guideline17"
                     app:layout_constraintStart_toStartOf="@+id/guideline5"
@@ -190,34 +175,29 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:src="@drawable/ic_color_lens"
-                        android:textColor="@color/black" />
+                        android:src="@drawable/ic_color_lens" />
 
                     <TextView
+                        style="@style/image_info_card_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="Цвет"
-                        android:textColor="@color/black" />
+                        android:text="@string/info_card_color_title" />
 
                     <TextView
                         android:id="@+id/imageInfoColor"
+                        style="@style/image_info_card_text"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="18 ноября 2014"
-                        android:textColor="@color/black" />
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/sizeInfoContainer"
+                    style="@style/image_info_card"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_marginTop="16dp"
                     android:background="@drawable/info_card_size"
-                    android:gravity="center"
-                    android:orientation="vertical"
                     app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintEnd_toStartOf="@+id/guideline13"
                     app:layout_constraintHorizontal_bias="0.0"
@@ -231,19 +211,16 @@
                         android:src="@drawable/ic_aspect_ratio" />
 
                     <TextView
+                        style="@style/image_info_card_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="Размеры"
-                        android:textColor="@color/black" />
+                        android:text="@string/info_card_size_title" />
 
                     <TextView
                         android:id="@+id/imageInfoSize"
+                        style="@style/image_info_card_text"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="18 ноября 2014"
-                        android:textColor="@color/black" />
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
 

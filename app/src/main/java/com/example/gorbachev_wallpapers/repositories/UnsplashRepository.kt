@@ -21,7 +21,7 @@ class UnsplashRepository @Inject constructor(
 	
 	val allDataImages: LiveData<List<Images>> = imagesDao.readAllData()
 	val allDataQueries: LiveData<List<Queries>> = imagesDao.readAllDataQuery()
-	val allDataFavQueries: LiveData<List<Queries>> = imagesDao.readAllFavouritesQueries()
+	val allDataFavQueries: LiveData<List<Queries>> = imagesDao.readAllFavouritesQueries()!!
 	
 	fun getSearchResults(query: String) =
 		Pager(
@@ -32,6 +32,9 @@ class UnsplashRepository @Inject constructor(
 			),
 			pagingSourceFactory = { UnsplashPagingSource(unsplashApi, query) }
 		).liveData
+	
+	
+	suspend fun getTotal(query: String) = unsplashApi.searchPhoto(query, 1,1).total
 	
 	suspend fun add(image: Images) {
 		imagesDao.add(image)
@@ -49,15 +52,11 @@ class UnsplashRepository @Inject constructor(
 		imagesDao.add(query)
 	}
 	
-	suspend fun delete(query: Queries) {
-		imagesDao.delete(query)
-	}
-	
 	fun isQueryExists(query: String): Boolean {
 		return imagesDao.isQueryExists(query)
 	}
 	
-	suspend fun update(query: Queries){
+	suspend fun update(query: Queries) {
 		imagesDao.update(query)
 	}
 	

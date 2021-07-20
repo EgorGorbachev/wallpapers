@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -15,7 +14,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Base64.*
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -70,7 +68,6 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 	private var popupWindow: PopupWindow? = null
 	
 	
-	
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		
@@ -117,6 +114,8 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 							isFirstResource: Boolean
 						): Boolean {
 							imageDetailsProgressbar.isVisible = false
+							imageDetailsMenu.isVisible = true
+							imageFullscreenBtn.isVisible = true
 							return false
 						}
 						
@@ -128,6 +127,8 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 							isFirstResource: Boolean
 						): Boolean {
 							imageDetailsProgressbar.isVisible = false
+							imageDetailsMenu.isVisible = true
+							imageFullscreenBtn.isVisible = true
 							return false
 						}
 					})
@@ -150,6 +151,8 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 							isFirstResource: Boolean
 						): Boolean {
 							imageDetailsProgressbar.isVisible = false
+							imageDetailsMenu.isVisible = true
+							imageFullscreenBtn.isVisible = true
 							return false
 						}
 						
@@ -161,6 +164,8 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 							isFirstResource: Boolean
 						): Boolean {
 							imageDetailsProgressbar.isVisible = false
+							imageDetailsMenu.isVisible = true
+							imageFullscreenBtn.isVisible = true
 							return false
 						}
 					})
@@ -306,7 +311,10 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 		}
 		
 		binding.imageDetailsFullScreen.setOnClickListener {
-			if (popupWindow != null) popupWindow?.dismiss()
+			if (popupWindow != null) {
+				popupWindow?.dismiss()
+				popupWindow = null
+			}
 		}
 		
 		binding.backBtnOnImageInfo.setOnClickListener {
@@ -388,6 +396,11 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 			
 			"px: ${photo.width} x ${photo.height}".also { infoMenu.imageInfoSize.text = it }
 			
+			infoMenu.portfolioBtn.setOnClickListener {
+				val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(photo.user.portfolio_url))
+				startActivity(browserIntent)
+			}
+			
 		} else {
 			infoMenu.imageInfoAuthorPhoto.setImageBitmap(image?.imageProfile)
 			
@@ -401,16 +414,24 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 			if (image?.twitter_username != null) {
 				infoMenu.imageInfoAuthorTwitter.text = image.twitter_username
 			} else infoMenu.twitterInfoContainer.isVisible = false
-			if (image?.description!=null) {
+			if (image?.description != null) {
 				infoMenu.imageInfoPhotoTitle.text = image.description
 			} else infoMenu.imageInfoPhotoTitle.isVisible = false
 			
 			infoMenu.imageInfoDate.text = image?.date
 			
 			infoMenu.imageInfoColor.text = image?.color
-
+			
 			"px: ${image?.width} x ${image?.height}".also { infoMenu.imageInfoSize.text = it }
+			
+			infoMenu.portfolioBtn.setOnClickListener {
+				val browserIntent =
+					Intent(Intent.ACTION_VIEW, Uri.parse(photo?.user?.portfolio_url))
+				startActivity(browserIntent)
+			}
 		}
+		
+		
 		binding.imageDetailsFullScreen.setOnClickListener {
 			if (popupWindow != null) hideOptionsWindow()
 		}

@@ -2,8 +2,10 @@ package com.example.gorbachev_wallpapers.presentation.fragments
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gorbachev_gmail.sharedPref.SharedPreferences
 import com.example.gorbachev_wallpapers.R
@@ -35,6 +37,10 @@ class HistoryFragment : BaseFragment(R.layout.fragment_history),
 		val recyclerView: RecyclerView = requireView().findViewById(R.id.queriesHistoryContainer)
 		recyclerView.setHasFixedSize(true)
 		recyclerView.adapter = adapter
+		val layoutManager = LinearLayoutManager(requireContext())
+		layoutManager.reverseLayout = true
+		layoutManager.stackFromEnd = true
+		recyclerView.layoutManager = layoutManager
 		
 		SP = SharedPreferences(requireContext())
 		
@@ -45,6 +51,7 @@ class HistoryFragment : BaseFragment(R.layout.fragment_history),
 	private fun showQueries() {
 		viewModel.allData.observe(viewLifecycleOwner, {
 			adapter.submitList(it)
+			binding.nullHistoryMes.isVisible = it.isNullOrEmpty()
 		})
 	}
 	

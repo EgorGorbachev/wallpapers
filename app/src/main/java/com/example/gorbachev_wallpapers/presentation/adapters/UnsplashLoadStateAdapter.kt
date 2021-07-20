@@ -7,9 +7,8 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStateAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gorbachev_wallpapers.databinding.RecyclerLoadBinding
-import java.util.zip.Inflater
 
-class UnsplashLoadStateAdapter(private val retry: () ->Unit) :
+class UnsplashLoadStateAdapter(private val retry: () -> Unit) :
 	LoadStateAdapter<UnsplashLoadStateAdapter.LoadStateViewHolder>() {
 	
 	override fun onCreateViewHolder(parent: ViewGroup, loadState: LoadState): LoadStateViewHolder {

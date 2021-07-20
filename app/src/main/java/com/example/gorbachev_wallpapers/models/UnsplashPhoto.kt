@@ -14,16 +14,16 @@ data class UnsplashPhoto(
 	val height: Int,
 	val updated_at: String,
 	val color: String,
-):Parcelable {
+) : Parcelable {
 	
 	@Parcelize
 	data class UnsplashPhotoUrls(
-		val raw:String,
-		val full:String,
-		val regular:String,
-		val small:String,
-		val thumb:String,
-	):Parcelable
+		val raw: String,
+		val full: String,
+		val regular: String,
+		val small: String,
+		val thumb: String,
+	) : Parcelable
 	
 	@Parcelize
 	data class UnsplashUser(
@@ -34,13 +34,14 @@ data class UnsplashPhoto(
 		val twitter_username: String,
 		val profile_image: ProfileImg,
 		
-	): Parcelable{
+		) : Parcelable {
 		@Parcelize
 		data class ProfileImg(
 			val small: String,
 			val medium: String,
 			val large: String
-		):Parcelable
+		) : Parcelable
+		
 		val attributionUrl get() = "https://unsplash.com/$username?utm_source=Gorbachev_wallpaper&utm_medium=referral"
 	}
 }

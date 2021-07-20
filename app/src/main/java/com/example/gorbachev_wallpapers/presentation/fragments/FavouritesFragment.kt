@@ -3,7 +3,6 @@ package com.example.gorbachev_wallpapers.presentation.fragments
 import android.os.Bundle
 import android.view.View
 import com.example.gorbachev_wallpapers.R
-import com.example.gorbachev_wallpapers.databinding.FragmentDetailsImageBinding
 import com.example.gorbachev_wallpapers.databinding.FragmentFavouritesBinding
 import com.example.gorbachev_wallpapers.presentation.adapters.FavouritesFragmentsAdapter
 import com.example.gorbachev_wallpapers.presentation.base.BaseFragment

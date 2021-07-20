@@ -7,12 +7,12 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:cardCornerRadius="20dp"
+        android:layout_margin="5dp"
+        app:cardCornerRadius="@dimen/fav_img_recycler_item_radius"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_margin="5dp">
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/favouritesImageIV"
@@ -30,9 +30,9 @@
         android:layout_marginEnd="20dp"
         android:src="@drawable/ic_delete"
         app:backgroundTint="@color/white"
-        app:tint="@color/main"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/main" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

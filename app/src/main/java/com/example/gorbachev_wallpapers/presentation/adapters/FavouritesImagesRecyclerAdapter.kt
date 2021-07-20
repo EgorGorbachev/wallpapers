@@ -46,7 +46,9 @@ class FavouritesImagesRecyclerAdapter(
 				Glide.with(itemView).load(image.img).centerCrop()
 					.transition(DrawableTransitionOptions.withCrossFade())
 					.error(R.drawable.ic_baseline_error_24).into(favouritesImageIV)
+				
 			}
+			
 			
 		}
 	}

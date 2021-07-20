@@ -19,7 +19,7 @@ class FavouritesFragmentsAdapter(supportFragmentManager: FragmentManager) :
 		return mFragmentList[position]
 	}
 	
-	fun addFragment(fragment: Fragment, title: String){
+	fun addFragment(fragment: Fragment, title: String) {
 		mFragmentList.add(fragment)
 		mFragmentTitleList.add(title)
 	}

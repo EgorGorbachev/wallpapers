@@ -13,9 +13,8 @@
             android:id="@+id/favQueryTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Amoled"
             android:textColor="@color/black"
-            android:textSize="20sp"
+            android:textSize="@dimen/fav_qur_recycler_item_title_text"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,7 +22,6 @@
             android:id="@+id/favQueryInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="300 результатов, вчера"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/favQueryTitle" />
 

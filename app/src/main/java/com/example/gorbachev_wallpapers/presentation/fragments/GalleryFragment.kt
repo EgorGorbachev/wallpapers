@@ -2,6 +2,8 @@ package com.example.gorbachev_wallpapers.presentation.fragments
 
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.SearchView
 import androidx.core.view.isVisible
@@ -18,14 +20,14 @@ import com.example.gorbachev_wallpapers.presentation.adapters.UnsplashRecyclerAd
 import com.example.gorbachev_wallpapers.presentation.base.BaseFragment
 import com.example.gorbachev_wallpapers.sharedPref.QUERY
 import com.example.gorbachev_wallpapers.viewmodels.GalleryViewModel
-import com.example.gorbachev_wallpapers.viewmodels.ImagesViewModel
 import com.example.gorbachev_wallpapers.viewmodels.QueriesViewModel
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.*
+import org.joda.time.DateTime
 import java.io.IOException
-import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -48,6 +50,8 @@ class GalleryFragment : BaseFragment(R.layout.fragment_gallery),
 	private lateinit var fabColumn: FloatingActionButton
 	
 	private lateinit var SP: SharedPreferences
+	
+	private var timer: Timer? = null
 	
 	
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -80,6 +84,8 @@ class GalleryFragment : BaseFragment(R.layout.fragment_gallery),
 		recyclerView.adapter = adapter.withLoadStateFooter(
 			footer = footerAdapter
 		)
+		
+		
 		layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
 			override fun getSpanSize(position: Int): Int {
 				return if (position == adapter.itemCount && footerAdapter.itemCount > 0) {
@@ -102,20 +108,40 @@ class GalleryFragment : BaseFragment(R.layout.fragment_gallery),
 		
 		searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 			override fun onQueryTextSubmit(query: String?): Boolean {
+				timer?.cancel()
 				if (query != null) {
 					binding.imageRecyclerView.scrollToPosition(0)
 					viewModel.searchPhotos(query)
 					searchView.clearFocus()
 					SP.setPref(QUERY, query)
-					insertQueryInDatabase(query,false, currentTime())
+					insertQueryInDatabase(query, false, currentTime())
 				}
 				return true
 			}
 			
+			
 			override fun onQueryTextChange(newText: String?): Boolean {
+				if (timer != null) {
+					timer?.cancel()
+				}
+				if (!newText.isNullOrEmpty()) {
+					timer = Timer()
+					timer?.schedule(object : TimerTask() {
+						override fun run() {
+							Handler(Looper.getMainLooper()).postDelayed({
+								binding.imageRecyclerView.scrollToPosition(0)
+								viewModel.searchPhotos(newText)
+								searchView.clearFocus()
+								SP.setPref(QUERY, newText)
+								insertQueryInDatabase(newText, false, currentTime())
+							}, 0)
+						}
+					}, 2000)
+				}
 				return true
 			}
 		})
+		
 		
 		if (!isOnline()) {
 			toast("You have no internet connection!")
@@ -143,21 +169,19 @@ class GalleryFragment : BaseFragment(R.layout.fragment_gallery),
 		
 	}
 	
-	private fun currentTime():String{
-		val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
-		return sdf.format(Date())
+	
+	private fun currentTime(): String {
+		return DateTime.now().toString()
 	}
 	
-	private fun insertQueryInDatabase(query: String, like: Boolean, time:String){
-		queriesViewModel.insertDatabase(
-			Queries(
-				0,
-				query,
-				like,
-				100,
-				time
+	@DelicateCoroutinesApi
+	private fun insertQueryInDatabase(query: String, like: Boolean, time: String) {
+		GlobalScope.launch(Dispatchers.Main) {
+			queriesViewModel.insertDatabase(
+				
+				Queries(query, like, viewModel.getTotal(query), time)
 			)
-		)
+		}
 	}
 	
 	override fun onItemClick(photo: UnsplashPhoto) {

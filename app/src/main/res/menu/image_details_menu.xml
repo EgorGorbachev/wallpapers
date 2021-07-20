@@ -2,21 +2,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/details_menu_share"
+        android:background="@drawable/list_selector_background"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_share_24"
-        android:background="@drawable/list_selector_background"
-        android:title="Share" />
+        android:title="@string/image_details_menu_share" />
 
     <item
         android:id="@+id/details_menu_settings"
+        android:background="@drawable/list_selector_background"
         android:enabled="true"
         android:icon="@drawable/ic_settings"
-        android:title="Options"
-        android:background="@drawable/list_selector_background" />
+        android:title="@string/image_details_menu_options" />
     <item
         android:id="@+id/details_menu_info"
+        android:background="@drawable/list_selector_background"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_info_24"
-        android:title="Info"
-        android:background="@drawable/list_selector_background" />
+        android:title="@string/image_details_menu_info" />
 </menu>

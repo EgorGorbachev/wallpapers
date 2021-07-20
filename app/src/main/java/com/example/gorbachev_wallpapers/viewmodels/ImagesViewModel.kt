@@ -15,17 +15,17 @@ class ImagesViewModel @ViewModelInject constructor(
 	private val repository: UnsplashRepository
 ) : ViewModel() {
 	
-	val allData:LiveData<List<Images>> =repository.allDataImages
+	val allData: LiveData<List<Images>> = repository.allDataImages
 	
-	fun insertDatabase(image:Images ){
+	fun insertDatabase(image: Images) {
 		GlobalScope.launch(Dispatchers.Default) {
-			if (!isPhotoExists(image.img)){
+			if (!isPhotoExists(image.img)) {
 				repository.add(image)
-			} else Log.d("duplicate","duplicate" )
+			} else Log.d("duplicate", "duplicate")
 		}
 	}
 	
-	fun isPhotoExists(img: Bitmap):Boolean{
+	fun isPhotoExists(img: Bitmap): Boolean {
 		return repository.isPhotoExists(img)
 	}
 	

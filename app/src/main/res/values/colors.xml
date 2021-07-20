@@ -15,4 +15,5 @@
     <color name="infoCardDate">#2600C853</color>
     <color name="infoCardColor">#26FFD700</color>
     <color name="infoCardSize">#26FF543E</color>
+    <color name="grey">#B6B6B6</color>
 </resources>

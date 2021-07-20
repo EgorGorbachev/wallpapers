@@ -1,4 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    //Titles
+    <dimen name="fav_qur_recycler_item_title_text">20sp</dimen>
+
+    <dimen name="null_img_mes_text">20sp</dimen>
+    <dimen name="null_queries_mes_text">20sp</dimen>
+    <dimen name="null_history_mes_text">20sp</dimen>
+    <dimen name="is_online_mes_text">30sp</dimen>
+
+    <dimen name="loader_title_text">60sp</dimen>
+
+    <dimen name="query_history_title_text">20sp</dimen>
+    <dimen name="profile_name_text">20sp</dimen>
+    <dimen name="image_info_photo_title">20sp</dimen>
+
+    //Radii
+    <dimen name="profile_image_radius">50dp</dimen>
+    <dimen name="gallery_photo_radius">20dp</dimen>
+    <dimen name="fav_img_recycler_item_radius">20dp</dimen>
     <dimen name="radius_search">20dp</dimen>
 </resources>

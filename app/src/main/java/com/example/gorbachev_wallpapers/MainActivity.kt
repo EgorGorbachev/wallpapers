@@ -15,7 +15,6 @@ import java.lang.reflect.Field
 class MainActivity : AppCompatActivity() {
 	
 	private lateinit var botNav: BottomNavigationViewEx
-
 	
 	
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,14 +25,15 @@ class MainActivity : AppCompatActivity() {
 		botNav.enableAnimation(true)
 		botNav.enableShiftingMode(true)
 		
-		val navHostFragment = supportFragmentManager.findFragmentById((R.id.fragmentContainerView)) as NavHostFragment
+		val navHostFragment =
+			supportFragmentManager.findFragmentById((R.id.fragmentContainerView)) as NavHostFragment
 		val navController = navHostFragment.findNavController()
 		botNav.setupWithNavController(navController)
 		
 		try {
 			val field: Field = CursorWindow::class.java.getDeclaredField("sCursorWindowSize")
 			field.isAccessible = true
-			field.set(null, 100 * 1024 * 1024) //the 100MB is the new size
+			field.set(null, 100 * 1024 * 1024)
 		} catch (e: Exception) {
 			e.printStackTrace()
 		}

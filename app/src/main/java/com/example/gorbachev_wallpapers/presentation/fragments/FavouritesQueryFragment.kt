@@ -2,12 +2,13 @@ package com.example.gorbachev_wallpapers.presentation.fragments
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gorbachev_gmail.sharedPref.SharedPreferences
 import com.example.gorbachev_wallpapers.R
-import com.example.gorbachev_wallpapers.databinding.FragmentFavouritesImagesBinding
 import com.example.gorbachev_wallpapers.databinding.FragmentFavouritesQueryBinding
 import com.example.gorbachev_wallpapers.models.Queries
 import com.example.gorbachev_wallpapers.presentation.adapters.FavouritesQueriesAdapter
@@ -36,6 +37,10 @@ class FavouritesQueryFragment : BaseFragment(R.layout.fragment_favourites_query)
 		val recyclerView: RecyclerView = requireView().findViewById(R.id.favouriteQueriesContainer)
 		recyclerView.setHasFixedSize(true)
 		recyclerView.adapter = adapter
+		val layoutManager = LinearLayoutManager(requireContext())
+		layoutManager.reverseLayout = true
+		layoutManager.stackFromEnd = true
+		recyclerView.layoutManager = layoutManager
 		
 		SP = SharedPreferences(requireContext())
 		
@@ -46,6 +51,7 @@ class FavouritesQueryFragment : BaseFragment(R.layout.fragment_favourites_query)
 	private fun showQueries() {
 		viewModel.allData.observe(viewLifecycleOwner, {
 			adapter.submitList(it)
+			binding.nullQueriesMes.isVisible = it.isNullOrEmpty()
 		})
 	}
 	
@@ -56,7 +62,9 @@ class FavouritesQueryFragment : BaseFragment(R.layout.fragment_favourites_query)
 	}
 	
 	override fun onDeleteClick(query: Queries) {
-		TODO("Not yet implemented")
+		query.like = !query.like
+		viewModel.update(query)
+		adapter.notifyDataSetChanged()
 	}
 	
 }

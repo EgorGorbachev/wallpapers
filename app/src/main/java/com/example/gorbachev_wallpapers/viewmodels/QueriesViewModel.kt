@@ -1,6 +1,5 @@
 package com.example.gorbachev_wallpapers.viewmodels
 
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
@@ -20,9 +19,7 @@ class QueriesViewModel @ViewModelInject constructor(
 	
 	fun insertDatabase(query: Queries) {
 		GlobalScope.launch(Dispatchers.Default) {
-			if (!isQueryExists(query.query)) {
-				repository.add(query)
-			} else Log.d("duplicate", "duplicate")
+			repository.add(query)
 		}
 	}
 	
@@ -30,7 +27,7 @@ class QueriesViewModel @ViewModelInject constructor(
 		return repository.isQueryExists(query)
 	}
 	
-	fun update(query: Queries){
+	fun update(query: Queries) {
 		viewModelScope.launch(Dispatchers.IO) {
 			repository.update(query)
 		}

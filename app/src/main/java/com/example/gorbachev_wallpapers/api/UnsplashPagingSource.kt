@@ -1,7 +1,6 @@
 package com.example.gorbachev_wallpapers.api
 
 import androidx.paging.PagingSource
-import androidx.paging.PagingState
 import com.example.gorbachev_wallpapers.models.UnsplashPhoto
 import retrofit2.HttpException
 import java.io.IOException

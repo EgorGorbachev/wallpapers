@@ -16,4 +16,16 @@
         <item name="android:windowEnterAnimation">@anim/from_bottom</item>
         <item name="android:windowExitAnimation">@anim/to_bottom</item>
     </style>
+    <style name="text_black_bold">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="image_info_card_text">
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+    <style name="image_info_card">
+        <item name="android:gravity">center</item>
+        <item name="android:orientation">vertical</item>
+    </style>
 </resources>

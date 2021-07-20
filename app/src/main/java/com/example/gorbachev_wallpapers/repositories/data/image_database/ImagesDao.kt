@@ -19,12 +19,12 @@ interface ImagesDao {
 	fun isPhotoExists(img: Bitmap): Boolean
 	
 	@Delete
-	suspend fun delete(image:Images)
+	suspend fun delete(image: Images)
 	
-	@Insert(onConflict = OnConflictStrategy.IGNORE)
+	@Insert(onConflict = OnConflictStrategy.REPLACE)
 	suspend fun add(query: Queries)
 	
-	@Query("SELECT * FROM queries_table ORDER BY id ASC")
+	@Query("SELECT * FROM queries_table")
 	fun readAllDataQuery(): LiveData<List<Queries>>
 	
 	@androidx.room.Query("SELECT EXISTS (SELECT 1 FROM queries_table WHERE `query` = :query)")
@@ -36,6 +36,6 @@ interface ImagesDao {
 	@Update
 	suspend fun update(query: Queries)
 	
-	@Query("SELECT * FROM queries_table WHERE `like`=0")
-	fun readAllFavouritesQueries(): LiveData<List<Queries>>
+	@Query("SELECT * FROM queries_table WHERE `like`=1")
+	fun readAllFavouritesQueries(): LiveData<List<Queries>>?
 }

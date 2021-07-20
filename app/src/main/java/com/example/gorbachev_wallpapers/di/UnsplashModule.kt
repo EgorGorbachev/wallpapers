@@ -26,7 +26,7 @@ object UnsplashModule {
 			.baseUrl(UnsplashApi.BASE_URL)
 			.addConverterFactory(GsonConverterFactory.create())
 			.build()
-
+	
 	@Provides
 	@Singleton
 	fun provideUnsplashApi(retrofit: Retrofit): UnsplashApi =
@@ -34,7 +34,7 @@ object UnsplashModule {
 	
 	@Singleton
 	@Provides
-	fun provideSearchDatabase(@ApplicationContext context : Context) =
+	fun provideSearchDatabase(@ApplicationContext context: Context) =
 		Room.databaseBuilder(
 			context.applicationContext,
 			ImagesDatabase::class.java,
