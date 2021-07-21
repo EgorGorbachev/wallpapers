@@ -144,7 +144,7 @@ class GalleryFragment : BaseFragment(R.layout.fragment_gallery),
 		
 		
 		if (!isOnline()) {
-			toast("You have no internet connection!")
+			toast(getString(R.string.no_internet_connection_mes))
 			binding.imageRecyclerView.isVisible = false
 			binding.isOnlineTV.isVisible = true
 			binding.imageAppBar.isVisible = false

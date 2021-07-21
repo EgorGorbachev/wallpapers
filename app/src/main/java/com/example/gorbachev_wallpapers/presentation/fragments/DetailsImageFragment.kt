@@ -269,13 +269,13 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 				)
 				Toast.makeText(
 					requireContext(),
-					"Обои рабочего стола успешно установлены!",
+					getString(R.string.successful_mes_work_space_wallpaper),
 					Toast.LENGTH_SHORT
 				).show()
 			} else {
 				Toast.makeText(
 					requireContext(),
-					"Неподходящая версия устройства!",
+					getString(R.string.device_error_mes),
 					Toast.LENGTH_SHORT
 				).show()
 			}
@@ -291,13 +291,13 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 				)
 				Toast.makeText(
 					requireContext(),
-					"Обои экрана блокировки успешно установлены!",
+					getString(R.string.successful_mes_block_screen_wallpaper),
 					Toast.LENGTH_SHORT
 				).show()
 			} else {
 				Toast.makeText(
 					requireContext(),
-					"Неподходящая версия устройства!",
+					getString(R.string.device_error_mes),
 					Toast.LENGTH_SHORT
 				).show()
 			}
@@ -545,14 +545,9 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 		fun innerCheck(name: String) {
 			if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-				Toast.makeText(
-					requireActivity(),
-					"$name permission refused",
-					Toast.LENGTH_SHORT
-				)
-					.show()
+				toast(name + getString(R.string.permission_refused_mes))
 			} else {
-				toast("$name permission granted")
+				toast(name + getString(R.string.permission_granted_mes))
 				sharePhoto()
 			}
 		}
