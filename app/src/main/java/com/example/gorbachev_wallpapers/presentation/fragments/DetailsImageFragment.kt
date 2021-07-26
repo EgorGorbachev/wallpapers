@@ -1,27 +1,21 @@
 package com.example.gorbachev_wallpapers.presentation.fragments
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Base64.*
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -38,7 +32,6 @@ import com.example.gorbachev_wallpapers.R
 import com.example.gorbachev_wallpapers.databinding.FragmentDetailsImageBinding
 import com.example.gorbachev_wallpapers.databinding.InfoMenuBinding
 import com.example.gorbachev_wallpapers.databinding.TuneMenuBinding
-import com.example.gorbachev_wallpapers.models.Images
 import com.example.gorbachev_wallpapers.presentation.base.BaseFragment
 import com.example.gorbachev_wallpapers.viewmodels.ImagesViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -46,9 +39,6 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_details_image.*
 import kotlinx.android.synthetic.main.info_menu.*
-import java.io.ByteArrayOutputStream
-import java.text.DateFormat
-import java.text.SimpleDateFormat
 import java.util.*
 
 @AndroidEntryPoint
@@ -63,7 +53,7 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 	
 	private val args by navArgs<DetailsImageFragmentArgs>()
 	
-	var WRITE_EXTERNAL_STORAGE_PERMISSION_CODE = 101
+	val WRITE_EXTERNAL_STORAGE_PERMISSION_CODE = 101
 	
 	private var popupWindow: PopupWindow? = null
 	
@@ -113,9 +103,7 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 							target: Target<Drawable>?,
 							isFirstResource: Boolean
 						): Boolean {
-							imageDetailsProgressbar.isVisible = false
-							imageDetailsMenu.isVisible = true
-							imageFullscreenBtn.isVisible = true
+							onImageReady()
 							return false
 						}
 						
@@ -126,9 +114,7 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 							dataSource: DataSource?,
 							isFirstResource: Boolean
 						): Boolean {
-							imageDetailsProgressbar.isVisible = false
-							imageDetailsMenu.isVisible = true
-							imageFullscreenBtn.isVisible = true
+							onImageReady()
 							return false
 						}
 					})
@@ -150,9 +136,7 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 							target: Target<Drawable>?,
 							isFirstResource: Boolean
 						): Boolean {
-							imageDetailsProgressbar.isVisible = false
-							imageDetailsMenu.isVisible = true
-							imageFullscreenBtn.isVisible = true
+							onImageReady()
 							return false
 						}
 						
@@ -163,9 +147,7 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 							dataSource: DataSource?,
 							isFirstResource: Boolean
 						): Boolean {
-							imageDetailsProgressbar.isVisible = false
-							imageDetailsMenu.isVisible = true
-							imageFullscreenBtn.isVisible = true
+							onImageReady()
 							return false
 						}
 					})
@@ -178,7 +160,7 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 		binding.apply {
 			var checkFullscreen = false
 			imageFullscreenBtn.setOnClickListener {
-				var checkFullscreenRes = fullScreen(checkFullscreen)
+				val checkFullscreenRes = fullScreen(checkFullscreen)
 				checkFullscreen = checkFullscreenRes
 			}
 		}
@@ -198,9 +180,7 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 						}
 						R.id.details_menu_info -> {
 							showInfo()
-							binding.imageFullscreenBtn.isVisible = false
-							binding.toolbar.isVisible = false
-							binding.backBtnOnImageInfo.isVisible = true
+							onInfoShow()
 							return@OnNavigationItemSelectedListener true
 						}
 					}
@@ -208,6 +188,18 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 				}
 			imageDetailsMenu.onNavigationItemSelectedListener = onClickBottomNavItem
 		}
+	}
+	
+	private fun onImageReady() {
+		binding.imageDetailsProgressbar.isVisible = false
+		imageDetailsMenu.isVisible = true
+		binding.imageFullscreenBtn.isVisible = true
+	}
+	
+	private fun onInfoShow() {
+		binding.imageFullscreenBtn.isVisible = false
+		binding.toolbar.isVisible = false
+		binding.backBtnOnImageInfo.isVisible = true
 	}
 	
 	
@@ -259,51 +251,15 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 		popupWindow!!.showAtLocation(view, Gravity.BOTTOM, 0, 0)
 		
 		tuneMenu.wallpaperToWorkSpaceBtn.setOnClickListener {
-			val wallpaperManager = WallpaperManager.getInstance(requireContext())
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-				wallpaperManager.setBitmap(
-					getBitmapFromView(imageDetailsIV),
-					null,
-					true,
-					WallpaperManager.FLAG_SYSTEM
-				)
-				Toast.makeText(
-					requireContext(),
-					getString(R.string.successful_mes_work_space_wallpaper),
-					Toast.LENGTH_SHORT
-				).show()
-			} else {
-				Toast.makeText(
-					requireContext(),
-					getString(R.string.device_error_mes),
-					Toast.LENGTH_SHORT
-				).show()
-			}
+			setWallpapersToWorkSpace()
 		}
+		
 		tuneMenu.wallpaperToBlockScreenBtn.setOnClickListener {
-			val wallpaperManager = WallpaperManager.getInstance(requireContext())
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-				wallpaperManager.setBitmap(
-					getBitmapFromView(imageDetailsIV),
-					null,
-					true,
-					WallpaperManager.FLAG_LOCK
-				)
-				Toast.makeText(
-					requireContext(),
-					getString(R.string.successful_mes_block_screen_wallpaper),
-					Toast.LENGTH_SHORT
-				).show()
-			} else {
-				Toast.makeText(
-					requireContext(),
-					getString(R.string.device_error_mes),
-					Toast.LENGTH_SHORT
-				).show()
-			}
+			setWallpapersToBlockScreen()
 		}
+		
 		tuneMenu.addToFavouritesBtn.setOnClickListener {
-			insertDataBase()
+			imagesViewModel.insertDataBase(args.photo!!, args.query!!, imageDetailsIV, goneImage)
 		}
 		
 		if (args.photo == null) {
@@ -320,6 +276,36 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 		binding.backBtnOnImageInfo.setOnClickListener {
 			popupWindow?.dismiss()
 			popupWindow = null
+		}
+	}
+	
+	private fun setWallpapersToWorkSpace() {
+		val wallpaperManager = WallpaperManager.getInstance(requireContext())
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+			wallpaperManager.setBitmap(
+				imagesViewModel.getBitmapFromView(imageDetailsIV),
+				null,
+				true,
+				WallpaperManager.FLAG_SYSTEM
+			)
+			toast(getString(R.string.successful_mes_work_space_wallpaper))
+		} else {
+			toast(getString(R.string.device_error_mes))
+		}
+	}
+	
+	private fun setWallpapersToBlockScreen() {
+		val wallpaperManager = WallpaperManager.getInstance(requireContext())
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+			wallpaperManager.setBitmap(
+				imagesViewModel.getBitmapFromView(imageDetailsIV),
+				null,
+				true,
+				WallpaperManager.FLAG_LOCK
+			)
+			toast(getString(R.string.successful_mes_block_screen_wallpaper))
+		} else {
+			toast(getString(R.string.device_error_mes))
 		}
 	}
 	
@@ -389,7 +375,7 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 				infoMenu.imageInfoPhotoTitle.text = photo.description
 			} else infoMenu.imageInfoPhotoTitle.isVisible = false
 			
-			val formattedDate = dateConvert(photo.updated_at)
+			val formattedDate = imagesViewModel.dateConvert(photo.updated_at)
 			infoMenu.imageInfoDate.text = formattedDate
 			
 			infoMenu.imageInfoColor.text = photo.color
@@ -441,36 +427,6 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 		}
 	}
 	
-	@SuppressLint("SimpleDateFormat")
-	private fun dateConvert(date: String): String {
-		val inputFormat: DateFormat = SimpleDateFormat("yyyy-MM-dd")
-		val outputFormat: DateFormat = SimpleDateFormat("dd MMM yyyy")
-		val photoDate: Date = inputFormat.parse(date.substring(0, 10))!!
-		return outputFormat.format(photoDate)
-	}
-	
-	private fun insertDataBase() {
-		val formattedDate = dateConvert(args.photo?.updated_at!!)
-		
-		imagesViewModel.insertDatabase(
-			Images(
-				args.photo!!.id,
-				getBitmapFromView(imageDetailsIV)!!,
-				getBitmapFromView(goneImage),
-				args.photo?.user!!.name,
-				args.photo?.user!!.username,
-				args.photo?.user!!.instagram_username,
-				args.photo?.user!!.twitter_username,
-				args.photo?.description,
-				formattedDate,
-				args.photo?.color,
-				args.photo?.width,
-				args.photo?.height,
-				args.query!!
-			)
-		)
-	}
-	
 	private fun hideOptionsWindow() {
 		binding.imageFullscreenBtn.isVisible = true
 		binding.toolbar.isVisible = true
@@ -479,29 +435,14 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 		popupWindow = null
 	}
 	
-	
-	private fun getBitmapFromView(photo: ImageView): Bitmap? {
-		val bitmap = Bitmap.createBitmap(photo.width, photo.height, Bitmap.Config.ARGB_8888)
-		val canvas = Canvas(bitmap)
-		photo.draw(canvas)
-		return bitmap
-	}
-	
-	private fun getImageUri(context: Context, photo: Bitmap): Uri? {
-		val bytes = ByteArrayOutputStream()
-		photo.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-		val path =
-			MediaStore.Images.Media.insertImage(context.contentResolver, photo, "Title", null)
-		return Uri.parse(path)
-	}
-	
 	private fun sharePhoto() {
-		val photo = getBitmapFromView(imageDetailsIV)
+		val photo = imagesViewModel.getBitmapFromView(imageDetailsIV)
 		val share = Intent(Intent.ACTION_SEND)
 		share.type = "image/*"
-		share.putExtra(Intent.EXTRA_STREAM, getImageUri(requireContext(), photo!!))
+		share.putExtra(Intent.EXTRA_STREAM, imagesViewModel.getImageUri(requireContext(), photo!!))
 		startActivity(Intent.createChooser(share, "Share"))
 	}
+	
 	
 	// request permission //////////////////////////////////
 	
@@ -524,13 +465,13 @@ class DetailsImageFragment : BaseFragment(R.layout.fragment_details_image) {
 				shouldShowRequestPermissionRationale(permission) -> {
 					requestPermissions(
 						arrayOf(
-							Manifest.permission.WRITE_EXTERNAL_STORAGE
+							permission
 						), requestCode
 					)
 				}
 				else -> requestPermissions(
 					arrayOf(
-						Manifest.permission.WRITE_EXTERNAL_STORAGE
+						permission
 					), requestCode
 				)
 			}

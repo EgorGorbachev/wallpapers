@@ -15,6 +15,8 @@ import org.joda.time.DateTime
 import org.joda.time.Days
 import org.joda.time.Hours
 import org.joda.time.Minutes
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
 
 class FavouritesQueriesAdapter(
 	private var listener: OnItemClick,
@@ -114,6 +116,9 @@ class FavouritesQueriesAdapter(
 		val hoursBetween = Hours.hoursBetween(queryTime, curTime)
 		val daysBetween = Days.daysBetween(queryTime, curTime)
 		
+		val formatter: DateTimeFormatter = DateTimeFormat.forPattern("MMMM")
+		val month = formatter.print(queryTime)
+		
 		var mTime = ""
 		
 		if (minutesBetween.minutes <= 5) {
@@ -126,7 +131,7 @@ class FavouritesQueriesAdapter(
 					mTime = "${hoursBetween.hours} ${res.getString(R.string.query_time_count_hours)}"
 				} else {
 					if (daysBetween.days != 0) {
-						mTime = "${queryTime.dayOfMonth()} ${queryTime.monthOfYear()}"
+						mTime = "${queryTime.dayOfMonth().asString} $month"
 					}
 				}
 			}

@@ -1,6 +1,7 @@
 package com.example.gorbachev_wallpapers.repositories
 
 import android.graphics.Bitmap
+import android.widget.ImageView
 import androidx.lifecycle.LiveData
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -9,6 +10,7 @@ import com.example.gorbachev_wallpapers.api.UnsplashApi
 import com.example.gorbachev_wallpapers.api.UnsplashPagingSource
 import com.example.gorbachev_wallpapers.models.Images
 import com.example.gorbachev_wallpapers.models.Queries
+import com.example.gorbachev_wallpapers.models.UnsplashPhoto
 import com.example.gorbachev_wallpapers.repositories.data.image_database.ImagesDao
 import javax.inject.Inject
 import javax.inject.Singleton

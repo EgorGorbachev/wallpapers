@@ -30,13 +30,12 @@ import org.joda.time.DateTime
 import java.io.IOException
 import java.util.*
 
-
+@DelicateCoroutinesApi
 @AndroidEntryPoint
 class GalleryFragment : BaseFragment(R.layout.fragment_gallery),
 	UnsplashRecyclerAdapter.OnItemClickListener {
 	
 	private val viewModel by viewModels<GalleryViewModel>()
-	private val queriesViewModel by viewModels<QueriesViewModel>()
 	
 	private var _binding: FragmentGalleryBinding? = null
 	private val binding get() = _binding!!
@@ -85,17 +84,12 @@ class GalleryFragment : BaseFragment(R.layout.fragment_gallery),
 			footer = footerAdapter
 		)
 		
-		
 		layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
 			override fun getSpanSize(position: Int): Int {
-				return if (position == adapter.itemCount && footerAdapter.itemCount > 0) {
-					2
-				} else {
-					1
-				}
+				return if (position == adapter.itemCount && footerAdapter.itemCount > 0) 2
+				else 1
 			}
 		}
-		
 		
 		viewModel.photos.observe(viewLifecycleOwner) {
 			adapter.submitData(viewLifecycleOwner.lifecycle, it)
@@ -110,15 +104,10 @@ class GalleryFragment : BaseFragment(R.layout.fragment_gallery),
 			override fun onQueryTextSubmit(query: String?): Boolean {
 				timer?.cancel()
 				if (query != null) {
-					binding.imageRecyclerView.scrollToPosition(0)
-					viewModel.searchPhotos(query)
-					searchView.clearFocus()
-					SP.setPref(QUERY, query)
-					insertQueryInDatabase(query, false, currentTime())
+					search(query)
 				}
 				return true
 			}
-			
 			
 			override fun onQueryTextChange(newText: String?): Boolean {
 				if (timer != null) {
@@ -129,11 +118,7 @@ class GalleryFragment : BaseFragment(R.layout.fragment_gallery),
 					timer?.schedule(object : TimerTask() {
 						override fun run() {
 							Handler(Looper.getMainLooper()).postDelayed({
-								binding.imageRecyclerView.scrollToPosition(0)
-								viewModel.searchPhotos(newText)
-								searchView.clearFocus()
-								SP.setPref(QUERY, newText)
-								insertQueryInDatabase(newText, false, currentTime())
+								search(newText)
 							}, 0)
 						}
 					}, 2000)
@@ -143,46 +128,45 @@ class GalleryFragment : BaseFragment(R.layout.fragment_gallery),
 		})
 		
 		
-		if (!isOnline()) {
-			toast(getString(R.string.no_internet_connection_mes))
-			binding.imageRecyclerView.isVisible = false
-			binding.isOnlineTV.isVisible = true
-			binding.imageAppBar.isVisible = false
+		if (!viewModel.isOnline()) {
+			noInternet()
 		}
-		
 		
 		fabColumn.setOnClickListener {
 			when (SP.getPrefInt("COUNT_COLUMN")) {
-				2 -> {
-					(binding.imageRecyclerView.layoutManager as GridLayoutManager).spanCount = 3
-					fabColumn.setImageResource(R.drawable.ic_2_columns)
-					SP.setPref("COUNT_COLUMN", 3)
-				}
-				3 -> {
-					(binding.imageRecyclerView.layoutManager as GridLayoutManager).spanCount = 2
-					fabColumn.setImageResource(R.drawable.ic_3_columns)
-					SP.setPref("COUNT_COLUMN", 2)
-				}
+				2 -> threeColumn()
+				3 -> twoColumn()
 			}
-			
-		}
-		
-	}
-	
-	
-	private fun currentTime(): String {
-		return DateTime.now().toString()
-	}
-	
-	@DelicateCoroutinesApi
-	private fun insertQueryInDatabase(query: String, like: Boolean, time: String) {
-		GlobalScope.launch(Dispatchers.Main) {
-			queriesViewModel.insertDatabase(
-				
-				Queries(query, like, viewModel.getTotal(query), time)
-			)
 		}
 	}
+	
+	private fun search(query:String){
+		binding.imageRecyclerView.scrollToPosition(0)
+		viewModel.searchPhotos(query)
+		searchView.clearFocus()
+		SP.setPref(QUERY, query)
+		viewModel.insertQueryInDatabase(query, false)
+	}
+	
+	private fun threeColumn(){
+		(binding.imageRecyclerView.layoutManager as GridLayoutManager).spanCount = 3
+		fabColumn.setImageResource(R.drawable.ic_2_columns)
+		SP.setPref("COUNT_COLUMN", 3)
+	}
+	
+	private fun twoColumn(){
+		(binding.imageRecyclerView.layoutManager as GridLayoutManager).spanCount = 2
+		fabColumn.setImageResource(R.drawable.ic_3_columns)
+		SP.setPref("COUNT_COLUMN", 2)
+	}
+	
+	private fun noInternet(){
+		toast(getString(R.string.no_internet_connection_mes))
+		binding.imageRecyclerView.isVisible = false
+		binding.isOnlineTV.isVisible = true
+		binding.imageAppBar.isVisible = false
+	}
+	
 	
 	override fun onItemClick(photo: UnsplashPhoto) {
 		val action = GalleryFragmentDirections.actionSearchFrToDetailsImageFragment(
@@ -198,17 +182,5 @@ class GalleryFragment : BaseFragment(R.layout.fragment_gallery),
 		_binding = null
 	}
 	
-	private fun isOnline(): Boolean {
-		val runtime = Runtime.getRuntime()
-		try {
-			val ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8")
-			val exitValue = ipProcess.waitFor()
-			return exitValue == 0
-		} catch (e: IOException) {
-			e.printStackTrace()
-		} catch (e: InterruptedException) {
-			e.printStackTrace()
-		}
-		return false
-	}
+	
 }
